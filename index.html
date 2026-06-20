@@ -338,6 +338,16 @@
   .map-sticker-bs .bs-num::placeholder{color:var(--dim);}
   .map-sticker-bs .bs-tag{margin-left:6px;font-family:var(--mono);font-size:9px;color:var(--dim);text-transform:uppercase;letter-spacing:1px;pointer-events:none;}
   #map-canvas{width:100%;height:82vh;min-height:560px;border:1px solid var(--line2);border-radius:var(--r-lg);overflow:hidden;background:#0a0d08;}
+  /* la carte et la boussole partagent le même parent (#view-map .map-wrap) */
+  .map-compass{position:absolute;top:18px;left:18px;width:62px;height:62px;z-index:5;cursor:pointer;
+    background:rgba(11,14,10,.78);border:1px solid var(--line2);border-radius:50%;backdrop-filter:blur(3px);box-shadow:0 2px 8px rgba(0,0,0,.5);}
+  .compass-ring{position:absolute;inset:0;}
+  .compass-ring .cdir{position:absolute;font-family:var(--mono);font-size:10px;font-weight:700;color:var(--muted);left:50%;top:50%;transform:translate(-50%,-50%);}
+  .compass-ring .cn{top:8px;color:var(--op);} .compass-ring .cs{top:auto;bottom:6px;}
+  .compass-ring .ce{left:auto;right:7px;} .compass-ring .cw{left:7px;}
+  .compass-needle{position:absolute;left:50%;top:50%;width:0;height:0;margin-left:-5px;margin-top:-20px;
+    border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:20px solid var(--op);transform-origin:50% 100%;transition:transform .15s;}
+  .compass-needle:after{content:'';position:absolute;left:-5px;top:20px;border-left:5px solid transparent;border-right:5px solid transparent;border-top:18px solid #cfd8c0;}
   .map-readout{font-size:12px;color:var(--amber);font-family:var(--mono);margin-top:8px;min-height:16px;letter-spacing:.5px;}
   /* surcharge style maplibre pour coller au thème */
   .maplibregl-popup-content{background:var(--surface)!important;color:var(--txt)!important;border:1px solid var(--line2);border-radius:var(--r);font-family:var(--mono);font-size:12px;}
@@ -608,7 +618,8 @@
       <h3><span class="d" style="background:var(--drill)"></span>Logistique</h3>
       <div class="grid">
         <div class="field"><label>Lieu</label><input type="text" id="o_lieu" placeholder="Terrain, ville..."></div>
-        <div class="field"><label>Date</label><input type="date" id="o_date"></div>
+        <div class="field"><label>Date de début</label><input type="date" id="o_date"></div>
+        <div class="field"><label>Date de fin <span style="color:var(--dim);font-weight:400">(optionnel)</span></label><input type="date" id="o_date_fin"></div>
         <div class="field"><label>Heure</label><input type="time" id="o_heure"></div>
       </div>
       <div class="field" style="margin-top:12px"><label>Renseignements utiles</label><textarea id="o_infos" placeholder="Matériel spécifique, point de RDV, consignes, dress code..."></textarea></div>
@@ -695,6 +706,7 @@
         <input type="file" id="cours-img-input" accept="image/*" multiple style="display:none" onchange="addCoursImgs(this.files)">
         <button class="ghost" onclick="document.getElementById('cours-pdf-input').click()">&#128196; Ajouter un PDF</button>
         <input type="file" id="cours-pdf-input" accept="application/pdf" multiple style="display:none" onchange="addCoursPdfs(this.files)">
+        <button class="ghost" onclick="addCoursVideo()">&#127909; Ajouter une vidéo (lien)</button>
       </div>
     </section>
 
@@ -746,7 +758,15 @@
 
     <div class="map-hint" id="map-hint">Choisis un outil puis clique sur la carte. Pour un tracé : pose des points, puis clique sur le dernier point (ou « Valider ») pour terminer.</div>
 
-    <div id="map-canvas"></div>
+    <div class="map-wrap" style="position:relative;">
+      <div id="map-canvas"></div>
+      <div id="map-compass" class="map-compass" onclick="resetMapNorth()" title="Cliquer pour remettre le nord en haut">
+        <div class="compass-ring">
+          <span class="cdir cn">N</span><span class="cdir ce">E</span><span class="cdir cs">S</span><span class="cdir cw">O</span>
+          <div class="compass-needle" id="compass-needle"></div>
+        </div>
+      </div>
+    </div>
 
     <div class="map-readout" id="map-readout"></div>
 
@@ -1217,7 +1237,20 @@ function genMembrePDF(){
 
 /* ============ CALENDRIER ============ */
 function operationsOf(){return Object.keys(db).filter(function(k){return db[k]&&db[k].type==='operation';}).map(function(k){var o=db[k];o._id=k;return o;});}
-function eventsByDate(){var idx={};operationsOf().forEach(function(o){if(o.date){(idx[o.date]=idx[o.date]||[]).push(o);}});return idx;}
+function dateRangeList(start,end){
+  var out=[start];if(!end||end<=start)return out;
+  var d=new Date(start+'T00:00:00');var stop=new Date(end+'T00:00:00');var guard=0;
+  while(d<stop&&guard<400){d.setDate(d.getDate()+1);guard++;out.push(d.toISOString().slice(0,10));}
+  return out;
+}
+function eventsByDate(){
+  var idx={};
+  operationsOf().forEach(function(o){
+    if(!o.date)return;
+    dateRangeList(o.date,o.date_fin).forEach(function(day){(idx[day]=idx[day]||[]).push(o);});
+  });
+  return idx;
+}
 function renderCalendar(){
   document.getElementById('cal-year').textContent=calYear;
   var idx=eventsByDate();
@@ -1341,7 +1374,8 @@ function renderOps(){
   box.innerHTML=list.map(function(o){
     var col=TYPE_COLOR[o.evtype]||'var(--aor1)';
     var nbp=(o.presents||[]).length;
-    var dh=[o.date?frDate(o.date):'',o.heure||''].filter(Boolean).join(' · ');
+    var dstr=o.date?(o.date_fin&&o.date_fin>o.date?(frDate(o.date)+' → '+frDate(o.date_fin)):frDate(o.date)):'';
+    var dh=[dstr,o.heure||''].filter(Boolean).join(' · ');
     return '<div class="opcard" onclick="openOp(\''+o._id+'\')"><div class="ostripe" style="background:'+col+'"></div>'+
       '<button class="trash" onclick="event.stopPropagation();delOp(\''+o._id+'\')">&#128465;</button>'+
       '<span class="otype" style="background:'+col+'">'+(TYPE_LABEL[o.evtype]||'Év.')+'</span>'+
@@ -1368,6 +1402,7 @@ function fillOpForm(o){
   document.getElementById('o_name').value=o.name||'';
   document.getElementById('o_lieu').value=o.lieu||'';
   document.getElementById('o_date').value=o.date||'';
+  document.getElementById('o_date_fin').value=o.date_fin||'';
   document.getElementById('o_heure').value=o.heure||'';
   document.getElementById('o_infos').value=o.infos||'';
   document.getElementById('o_scenario').value=o.scenario||'';
@@ -1434,6 +1469,7 @@ function readOpForm(){
   o.name=document.getElementById('o_name').value.trim();
   o.lieu=document.getElementById('o_lieu').value.trim();
   o.date=document.getElementById('o_date').value;
+  o.date_fin=document.getElementById('o_date_fin').value;
   o.heure=document.getElementById('o_heure').value;
   o.infos=document.getElementById('o_infos').value.trim();
   o.scenario=document.getElementById('o_scenario').value.trim();
@@ -1460,7 +1496,7 @@ function genOpPDF(){
   /* documents -> pages dédiées à la fin (rendu asynchrone des PDF) */
   var docs=(o.docs||[]);
   function kv(l,v){return v?'<tr><td class="l">'+l+'</td><td>'+nl2br(v)+'</td></tr>':'';}
-  var human=o.date?frDate(o.date):'';
+  var human=o.date?(o.date_fin&&o.date_fin>o.date?(frDate(o.date)+' → '+frDate(o.date_fin)):frDate(o.date)):'';
   var w=window.open('','_blank');
   w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>'+esc(o.name||'Opération')+'</title></head><body style="font-family:Arial;background:#0b0e0a;color:#e4e9da;padding:40px;text-align:center"><h3>Génération du PDF...</h3><p>Intégration des documents joints, patiente.</p></body></html>');
   docsToPagesAsync(docs).then(function(docsPagesHtml){
@@ -1571,7 +1607,7 @@ function newCours(){
 }
 function openCours(id){
   currentCoursId=id;var c=db[id]||{};
-  coursBlocks=(c.blocks||[]).map(function(b){return {type:b.type,text:b.text||'',data:b.data||'',cap:b.cap||'',name:b.name||''};});
+  coursBlocks=(c.blocks||[]).map(function(b){return {type:b.type,text:b.text||'',data:b.data||'',cap:b.cap||'',name:b.name||'',url:b.url||''};});
   fillCoursForm(c);showView('view-cours-fiche');document.getElementById('cours-status').textContent='';
 }
 function fillCoursForm(c){
@@ -1594,9 +1630,27 @@ function renderCoursBlocks(){
     if(b.type==='pdf'){
       return '<div class="cblock">'+ctrl+'<div style="display:flex;align-items:center;gap:10px;color:var(--txt);font-family:var(--mono);font-size:13px;padding:6px"><span style="font-size:24px">&#128196;</span> PDF joint : '+esc(b.name||'document.pdf')+'<span style="color:var(--dim);font-size:11px"> (sera intégré page par page au PDF)</span></div></div>';
     }
+    if(b.type==='video'){
+      var emb=videoEmbedUrl(b.url);
+      var prev=emb?('<iframe src="'+emb+'" style="width:100%;aspect-ratio:16/9;border:0;border-radius:6px;margin-top:6px" allowfullscreen></iframe>'):'<p class="op-hint" style="margin:6px 0 0">Lien non reconnu (YouTube / Vimeo attendu).</p>';
+      return '<div class="cblock">'+ctrl+'<div style="display:flex;align-items:center;gap:8px;color:var(--txt);font-family:var(--mono);font-size:13px"><span style="font-size:20px">&#127909;</span> Vidéo</div>'+
+        '<input class="imgcap" placeholder="Colle un lien YouTube ou Vimeo" value="'+esc(b.url||'')+'" oninput="coursBlocks['+i+'].url=this.value;renderCoursBlocks();">'+prev+'</div>';
+    }
     return '<div class="cblock">'+ctrl+'<img src="'+b.data+'"><input class="imgcap" placeholder="Légende (optionnelle)" value="'+esc(b.cap)+'" oninput="coursBlocks['+i+'].cap=this.value"></div>';
   }).join('');
 }
+/* transforme un lien YouTube/Vimeo en URL intégrable */
+function videoEmbedUrl(url){
+  if(!url)return '';
+  url=url.trim();
+  var m;
+  if((m=url.match(/youtu\.be\/([\w-]{6,})/))||(m=url.match(/[?&]v=([\w-]{6,})/))||(m=url.match(/youtube\.com\/embed\/([\w-]{6,})/))||(m=url.match(/youtube\.com\/shorts\/([\w-]{6,})/))){
+    return 'https://www.youtube.com/embed/'+m[1];
+  }
+  if((m=url.match(/vimeo\.com\/(?:video\/)?(\d+)/))){return 'https://player.vimeo.com/video/'+m[1];}
+  return '';
+}
+function addCoursVideo(){coursBlocks.push({type:'video',url:''});renderCoursBlocks();}
 function addCoursText(){coursBlocks.push({type:'text',text:''});renderCoursBlocks();}
 function addCoursImgs(files){
   [].slice.call(files).forEach(function(f){
@@ -1618,7 +1672,7 @@ function readCoursForm(){
   c.title=document.getElementById('c_title').value.trim();
   c.cat=document.getElementById('c_cat').value;
   c.instr=document.getElementById('c_instr').value.trim();
-  c.blocks=coursBlocks.map(function(b){return {type:b.type,text:b.text||'',data:b.data||'',cap:b.cap||'',name:b.name||''};});
+  c.blocks=coursBlocks.map(function(b){return {type:b.type,text:b.text||'',data:b.data||'',cap:b.cap||'',name:b.name||'',url:b.url||''};});
   db[currentCoursId]=c;return c;
 }
 function saveCours(){
@@ -1642,6 +1696,7 @@ function genCoursPDF(){
   var inlineBody=blocks.map(function(b){
     if(b.type==='text')return '<div class="ctext">'+nl2br(b.text)+'</div>';
     if(b.type==='img')return '<figure class="cfig"><img src="'+b.data+'">'+(b.cap?'<figcaption>'+esc(b.cap)+'</figcaption>':'')+'</figure>';
+    if(b.type==='video'&&b.url)return '<div class="ctext">&#127909; Vidéo : <a href="'+esc(b.url)+'" style="color:#4a90d9">'+esc(b.url)+'</a></div>';
     return '';
   }).join('')||'<p style="color:#888">Cours vide.</p>';
   docsToPagesAsync(pdfDocs).then(function(pdfPages){
@@ -1733,7 +1788,22 @@ function initMap(){
   map.on('touchstart',onMapTouchStart);
   /* désactiver le menu contextuel natif sur la carte */
   map.getContainer().addEventListener('contextmenu',function(ev){ev.preventDefault();});
+  /* boussole : suit la rotation de la carte + réoriente les flèches GPS */
+  map.on('rotate',updateCompass);
+  map.on('load',updateCompass);
 }
+function updateCompass(){
+  var b=map?map.getBearing():0;
+  var n=document.getElementById('compass-needle');
+  if(n)n.style.transform='rotate('+(-b)+'deg)';
+  /* réoriente les flèches de cap des membres (cap absolu - rotation carte) */
+  Object.keys(gpsMarkers).forEach(function(k){
+    var ex=gpsMarkers[k];if(!ex||!ex.arrow)return;
+    var h=ex.lastHeading;
+    if(typeof h==='number')ex.arrow.style.transform='rotate('+(h-b)+'deg)';
+  });
+}
+function resetMapNorth(){if(map)map.easeTo({bearing:0,duration:300});}
 function addMapLayers(){
   map.addSource('shapes',{type:'geojson',data:emptyFC()});
   map.addLayer({id:'shape-fill',type:'fill',source:'shapes',filter:['==',['get','t'],'zone'],
@@ -2391,6 +2461,10 @@ function toggleGps(){
   if(!sb){alert('Supabase non connecté : le GPS live nécessite la synchro cloud.');return;}
   if(gpsOn){stopGps();}else{startGps();}
 }
+var gpsHeading=null;      /* cap du téléphone (degrés) */
+var gpsWakeLock=null;     /* maintient l'écran allumé */
+var gpsLastPos=null;      /* dernière position connue */
+
 function startGps(){
   var pseudo=(document.getElementById('gps-pseudo').value||'').trim();
   if(!pseudo){document.getElementById('gps-status').textContent='// entre ton indicatif d\'abord';return;}
@@ -2399,25 +2473,49 @@ function startGps(){
   var btn=document.getElementById('gps-btn');btn.classList.add('live');btn.innerHTML='&#128308; Arrêter ma position';
   document.getElementById('gps-status').textContent='// acquisition GPS...';
   subscribePositions();
-  gpsWatchId=navigator.geolocation.watchPosition(onGpsPos,onGpsErr,{enableHighAccuracy:true,maximumAge:5000,timeout:15000});
+  /* watch GPS haute précision, sans cache (maximumAge 0 = position fraîche) */
+  gpsWatchId=navigator.geolocation.watchPosition(onGpsPos,onGpsErr,{enableHighAccuracy:true,maximumAge:0,timeout:20000});
+  startHeading();         /* boussole du téléphone -> cap de la flèche */
+  requestWakeLock();      /* garde l'écran allumé tant que possible */
+  document.addEventListener('visibilitychange',gpsVisibility);
 }
 function stopGps(){
   gpsOn=false;
   var btn=document.getElementById('gps-btn');btn.classList.remove('live');btn.innerHTML='&#128225; Activer ma position';
   document.getElementById('gps-status').textContent='// position désactivée';
   if(gpsWatchId!=null){navigator.geolocation.clearWatch(gpsWatchId);gpsWatchId=null;}
-  /* retirer ma ligne de la base */
+  stopHeading();releaseWakeLock();
+  document.removeEventListener('visibilitychange',gpsVisibility);
   if(sb&&gpsMyPseudo){sb.from('positions').delete().eq('pseudo',gpsMyPseudo).then(function(){},function(){});}
+}
+/* quand l'app revient au premier plan (déverrouillage), on relance proprement */
+function gpsVisibility(){
+  if(document.visibilityState==='visible'&&gpsOn){
+    requestWakeLock();
+    if(gpsWatchId==null){
+      gpsWatchId=navigator.geolocation.watchPosition(onGpsPos,onGpsErr,{enableHighAccuracy:true,maximumAge:0,timeout:20000});
+    }
+    loadAllPositions();
+  }
 }
 function onGpsPos(pos){
   var lat=pos.coords.latitude, lon=pos.coords.longitude;
+  gpsLastPos={lat:lat,lon:lon};
+  /* si le téléphone fournit un cap de déplacement, on le garde en secours */
+  if(typeof pos.coords.heading==='number'&&!isNaN(pos.coords.heading)&&pos.coords.speed>0.5){gpsHeading=pos.coords.heading;}
   document.getElementById('gps-status').textContent='// position émise ('+lat.toFixed(4)+', '+lon.toFixed(4)+')';
-  /* throttle : 1 envoi / 8s max */
+  /* throttle : 1 envoi / 3s max (au lieu de 8s) */
   var now=Date.now();
-  if(now-gpsLastSent<8000)return;
-  gpsLastSent=now;
+  if(now-gpsLastSent<3000)return;
+  sendMyPosition();
+}
+function sendMyPosition(){
+  if(!sb||!gpsOn||!gpsLastPos)return;
+  gpsLastSent=Date.now();
   var color=document.getElementById('gps-color').value||'#46b29d';
-  sb.from('positions').upsert({pseudo:gpsMyPseudo,lat:lat,lon:lon,color:color,updated_at:new Date().toISOString()}).then(function(r){
+  var row={pseudo:gpsMyPseudo,lat:gpsLastPos.lat,lon:gpsLastPos.lon,color:color,updated_at:new Date().toISOString()};
+  if(gpsHeading!=null)row.heading=Math.round(gpsHeading);
+  sb.from('positions').upsert(row).then(function(r){
     if(r&&r.error){document.getElementById('gps-status').textContent='// erreur envoi : '+r.error.message;}
   });
 }
@@ -2425,6 +2523,45 @@ function onGpsErr(e){
   var msg=e.code===1?'permission refusée':(e.code===2?'position indisponible':'délai dépassé');
   document.getElementById('gps-status').textContent='// GPS : '+msg;
 }
+/* ---- CAP / BOUSSOLE du téléphone (flèche qui tourne) ---- */
+function startHeading(){
+  if(!window.DeviceOrientationEvent)return;
+  /* iOS exige une autorisation explicite */
+  if(typeof DeviceOrientationEvent.requestPermission==='function'){
+    DeviceOrientationEvent.requestPermission().then(function(s){if(s==='granted')bindHeading();}).catch(function(){});
+  }else{bindHeading();}
+}
+function bindHeading(){
+  window.addEventListener('deviceorientationabsolute',onHeading,true);
+  window.addEventListener('deviceorientation',onHeading,true);
+}
+function onHeading(e){
+  var h=null;
+  if(typeof e.webkitCompassHeading==='number'){h=e.webkitCompassHeading;}      /* iOS : 0 = nord */
+  else if(e.absolute&&typeof e.alpha==='number'){h=360-e.alpha;}                /* Android absolu */
+  if(h!=null&&!isNaN(h)){gpsHeading=(h+360)%360;updateMyArrow();}
+}
+function stopHeading(){
+  window.removeEventListener('deviceorientationabsolute',onHeading,true);
+  window.removeEventListener('deviceorientation',onHeading,true);
+}
+function updateMyArrow(){
+  var ex=gpsMarkers[gpsMyPseudo];if(!ex||!ex.arrow)return;
+  var mapBearing=map?map.getBearing():0;
+  ex.arrow.style.transform='rotate('+((gpsHeading||0)-mapBearing)+'deg)';
+}
+/* ---- WAKE LOCK : empêche la mise en veille tant que l'écran est visible ---- */
+function requestWakeLock(){
+  try{
+    if('wakeLock' in navigator){
+      navigator.wakeLock.request('screen').then(function(wl){gpsWakeLock=wl;
+        wl.addEventListener('release',function(){gpsWakeLock=null;});
+      }).catch(function(){});
+    }
+  }catch(e){}
+}
+function releaseWakeLock(){try{if(gpsWakeLock){gpsWakeLock.release();gpsWakeLock=null;}}catch(e){}}
+
 /* abonnement temps réel : reçoit les positions des autres */
 function subscribePositions(){
   if(!sb)return;
@@ -2438,14 +2575,50 @@ function subscribePositions(){
       })
       .subscribe();
   }catch(e){}
-  /* secours : recharge toutes les 12s au cas où le realtime ne passe pas */
-  if(!gpsPollTimer)gpsPollTimer=setInterval(loadAllPositions,12000);
+  /* secours : recharge toutes les 5s (au lieu de 12s) si le realtime ne passe pas */
+  if(!gpsPollTimer)gpsPollTimer=setInterval(loadAllPositions,5000);
+  subscribeMapWorld();
+}
+/* synchro temps réel du calque carte (dessins, autocollants, pings) entre membres */
+var mapWorldChannel=null;
+var mapWorldPoll=null;
+function subscribeMapWorld(){
+  if(!sb)return;
+  if(!mapWorldChannel){
+    try{
+      mapWorldChannel=sb.channel('mapworld-live')
+        .on('postgres_changes',{event:'*',schema:'public',table:'entries',filter:'id=eq.__mapworld__'},function(payload){
+          var row=payload.new||{};var d=(row.data)||{};
+          if(d.pings||d.shapes||d.stickers){
+            /* ne pas écraser si je suis en train de dessiner */
+            if(mapDraftPts&&mapDraftPts.length)return;
+            mapWorld={pings:d.pings||[],shapes:d.shapes||[],stickers:d.stickers||[],bsCount:d.bsCount||0};
+            db[MAP_WORLD_KEY]={type:'mapdata',data:d};cacheLocal();
+            if(map&&mapReady){redrawMap();renderMapLegend();}
+          }
+        })
+        .subscribe();
+    }catch(e){}
+  }
+  /* secours : recharge le monde-carte depuis le cloud toutes les 6s */
+  if(!mapWorldPoll)mapWorldPoll=setInterval(refreshMapWorld,6000);
+}
+function refreshMapWorld(){
+  if(!sb||!map||!mapReady)return;
+  if(mapDraftPts&&mapDraftPts.length)return;   /* je dessine : ne pas écraser */
+  sb.from('entries').select('data').eq('id','__mapworld__').maybeSingle().then(function(r){
+    if(r&&r.data&&r.data.data){
+      var d=r.data.data;
+      mapWorld={pings:d.pings||[],shapes:d.shapes||[],stickers:d.stickers||[],bsCount:d.bsCount||0};
+      db[MAP_WORLD_KEY]={type:'mapdata',data:d};cacheLocal();
+      redrawMap();renderMapLegend();
+    }
+  },function(){});
 }
 function loadAllPositions(){
   if(!sb)return;
   sb.from('positions').select('*').then(function(r){
     if(r&&r.data){
-      /* purge les positions trop vieilles (>2 min) côté affichage */
       var now=Date.now();
       r.data.forEach(function(p){
         var age=now-new Date(p.updated_at).getTime();
@@ -2460,14 +2633,29 @@ function upsertGpsMarker(p){
   var ex=gpsMarkers[p.pseudo];
   if(ex){
     ex.marker.setLngLat([p.lon,p.lat]);ex.label.setLngLat([p.lon,p.lat]);
+    if(ex.arrow&&typeof p.heading==='number'){
+      ex.lastHeading=p.heading;
+      var mb=map?map.getBearing():0;ex.arrow.style.transform='rotate('+(p.heading-mb)+'deg)';
+    }
     return;
   }
-  var el=document.createElement('div');
-  el.style.cssText='width:18px;height:18px;border-radius:50%;background:'+(p.color||'#46b29d')+';border:3px solid #fff;box-shadow:0 0 0 2px rgba(0,0,0,.5),0 0 12px '+(p.color||'#46b29d')+';';
-  var marker=new maplibregl.Marker({element:el,anchor:'center'}).setLngLat([p.lon,p.lat]).addTo(map);
+  var wrap=document.createElement('div');
+  wrap.style.cssText='position:relative;width:30px;height:30px;';
+  /* flèche de cap */
+  var arrow=document.createElement('div');
+  arrow.style.cssText='position:absolute;top:-9px;left:50%;width:0;height:0;margin-left:-7px;'+
+    'border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:14px solid '+(p.color||'#46b29d')+';'+
+    'filter:drop-shadow(0 0 2px rgba(0,0,0,.6));transform-origin:50% 23px;transition:transform .2s;';
+  var mb=map?map.getBearing():0;
+  if(typeof p.heading==='number')arrow.style.transform='rotate('+(p.heading-mb)+'deg)';
+  /* point central */
+  var dot=document.createElement('div');
+  dot.style.cssText='position:absolute;top:7px;left:7px;width:16px;height:16px;border-radius:50%;background:'+(p.color||'#46b29d')+';border:3px solid #fff;box-shadow:0 0 0 2px rgba(0,0,0,.5),0 0 12px '+(p.color||'#46b29d')+';';
+  wrap.appendChild(arrow);wrap.appendChild(dot);
+  var marker=new maplibregl.Marker({element:wrap,anchor:'center'}).setLngLat([p.lon,p.lat]).addTo(map);
   var le=document.createElement('div');le.className='map-ping-lbl';le.style.borderColor=(p.color||'#46b29d');le.textContent=p.pseudo;
-  var label=new maplibregl.Marker({element:le,anchor:'bottom',offset:[0,-14]}).setLngLat([p.lon,p.lat]).addTo(map);
-  gpsMarkers[p.pseudo]={marker:marker,label:label};
+  var label=new maplibregl.Marker({element:le,anchor:'bottom',offset:[0,-20]}).setLngLat([p.lon,p.lat]).addTo(map);
+  gpsMarkers[p.pseudo]={marker:marker,label:label,arrow:arrow,lastHeading:(typeof p.heading==='number'?p.heading:null)};
 }
 function removeGpsMarker(pseudo){
   var ex=gpsMarkers[pseudo];if(!ex)return;
