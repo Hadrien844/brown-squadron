@@ -972,12 +972,18 @@ function startApp(){
   document.getElementById('app-root').style.display='';
   if(SB_URL&&SB_KEY&&window.supabase){sb=window.supabase.createClient(SB_URL,SB_KEY);}
   db=loadCache();renderAll();applyBranding();cloudRefresh();
+  /* restaurer le dernier onglet ouvert (sauf si pas trouvé) */
+  try{
+    var last=sessionStorage.getItem('bs_lastview');
+    if(last){var btn=document.querySelector('.tabbar button[data-view="'+last+'"]');if(btn)switchTab(btn);}
+  }catch(e){}
 }
 
 /* ============ NAV ============ */
 function switchTab(btn){
   document.querySelectorAll('.tabbar button').forEach(function(b){b.classList.remove('on');});
   btn.classList.add('on');var id=btn.getAttribute('data-view');showView(id);
+  try{sessionStorage.setItem('bs_lastview',id);}catch(e){}
   if(id==='view-map'){mapOpMode=null;initMap();}
   if(id==='view-home'){renderDashboard();}
 }
@@ -1805,7 +1811,7 @@ function initMap(){
     mapReady=true;
     try{map.setProjection({type:'globe'});}catch(e){}
     addMapLayers();redrawMap();renderMapLegend();
-    if(sb)subscribePositions();
+    if(sb){subscribeMapWorld();subscribePositions();}
   });
   map.on('click',onMapClick);
   map.on('mousemove',onMapMove);
@@ -2613,7 +2619,6 @@ function subscribePositions(){
   }catch(e){}
   /* secours : recharge toutes les 5s (au lieu de 12s) si le realtime ne passe pas */
   if(!gpsPollTimer)gpsPollTimer=setInterval(loadAllPositions,5000);
-  subscribeMapWorld();
 }
 /* synchro temps réel du calque carte (dessins, autocollants, pings) entre membres */
 var mapWorldChannel=null;
