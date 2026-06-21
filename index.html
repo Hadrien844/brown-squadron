@@ -359,22 +359,29 @@
   /* barre flottante : cachée par défaut, visible seulement en plein écran */
   .map-fs-bar{display:none;}
   .map-wrap.fs .map-fs-bar{
-    display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:center;
-    position:absolute;left:8px;right:8px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:9100;
-    background:rgba(11,14,10,.82);backdrop-filter:blur(6px);
-    border:1px solid var(--line2);border-radius:14px;padding:8px;}
-  .fsm{background:var(--surface2);border:1px solid var(--line2);color:var(--txt);
-    font-size:18px;line-height:1;min-width:44px;height:44px;border-radius:10px;cursor:pointer;
+    display:flex;gap:4px;align-items:center;flex-wrap:wrap;justify-content:center;
+    position:absolute;left:auto;right:10px;bottom:calc(14px + env(safe-area-inset-bottom));z-index:9100;
+    width:auto;max-width:78vw;
+    background:rgba(11,14,10,.66);backdrop-filter:blur(7px);
+    border:1px solid rgba(255,255,255,.12);border-radius:11px;padding:5px 5px 5px 22px;
+    box-shadow:0 4px 14px rgba(0,0,0,.4);}
+  /* poignée de déplacement (coin gauche) */
+  .map-wrap.fs .map-fs-bar .fs-handle{
+    position:absolute;left:0;top:0;bottom:0;width:18px;cursor:grab;touch-action:none;
+    display:flex;align-items:center;justify-content:center;color:#7c8a72;
+    border-right:1px solid rgba(255,255,255,.1);border-radius:11px 0 0 11px;font-size:13px;}
+  .map-wrap.fs .map-fs-bar .fs-handle:active{cursor:grabbing;}
+  .fsm{background:rgba(40,46,36,.85);border:1px solid rgba(255,255,255,.12);color:var(--txt);
+    font-size:15px;line-height:1;min-width:36px;height:36px;border-radius:8px;cursor:pointer;
     display:flex;align-items:center;justify-content:center;font-family:var(--mono);}
   .fsm.on{background:var(--aor1);color:#1a1605;border-color:var(--aor1);}
   .fsm-ok{background:#2e7d32;color:#fff;border-color:#3a9a40;}
   .fsm-cancel{background:#7a2b2b;color:#fff;border-color:#9a3a3a;}
-  .fsm-black{background:#111;color:#9aa;border-color:#444;}
-  .fsm-exit{background:#c0392b;color:#fff;border-color:#e05a48;font-size:12px;font-weight:700;
-    letter-spacing:1px;padding:0 14px;width:auto;}
-  .fsm-sep{flex:1 1 100%;height:0;}
-  /* en plein écran la boussole reste en haut à gauche */
-  .map-wrap.fs .map-compass{top:calc(10px + env(safe-area-inset-top));left:10px;z-index:9100;}
+  .fsm-black{background:#0d0d0d;color:#9aa;border-color:#3a3a3a;}
+  .fsm-exit{background:rgba(192,57,43,.9);color:#fff;border-color:#e05a48;font-size:10px;font-weight:700;
+    letter-spacing:.5px;padding:0 9px;width:auto;height:36px;}
+  .fsm-sep{display:none;}
+  .map-wrap.fs .map-compass{top:calc(12px + env(safe-area-inset-top));left:12px;z-index:9100;}
   /* la carte et la boussole partagent le même parent (#view-map .map-wrap) */
   .map-compass{position:absolute;top:16px;left:16px;width:72px;height:72px;z-index:5;cursor:pointer;
     background:radial-gradient(circle at 50% 40%,rgba(28,33,22,.95),rgba(11,14,10,.92));
@@ -877,7 +884,7 @@
       <input type="color" id="gps-color" value="#46b29d" title="Ta couleur">
       <button id="gps-btn" class="gps-btn" onclick="toggleGps()">&#128225; Activer ma position</button>
       <button id="blackout-btn" class="gps-btn blackout-toggle" onclick="enterBlackout()">&#127761; Mode Blackout</button>
-      <button id="mapfs-btn" class="gps-btn" onclick="enterMapFullscreen()" title="Carte en plein écran">&#9974; Plein écran</button>
+      <button id="mapfs-btn" class="gps-btn" onclick="enterMapFullscreen()" title="Carte en mode tactique plein écran">&#9974; Mode Tactique</button>
       <span class="gps-status" id="gps-status"></span>
     </div>
 
@@ -893,6 +900,7 @@
       </div>
       <!-- Barre d'outils flottante (visible seulement en plein écran) -->
       <div id="map-fs-bar" class="map-fs-bar">
+        <div class="fs-handle" id="fs-handle" title="Déplacer la barre">&#9776;</div>
         <button class="fsm" data-tool="ping" onclick="setMapTool('ping')" title="Ping">&#128205;</button>
         <button class="fsm" data-tool="zone" onclick="setMapTool('zone')" title="Zone">&#11036;</button>
         <button class="fsm" data-tool="foot" onclick="setMapTool('foot')" title="Chemin à pied">&#128099;</button>
@@ -900,9 +908,8 @@
         <button class="fsm" data-tool="veh-sticker" onclick="setMapTool('veh-sticker')" title="Véhicule">&#128663;</button>
         <button class="fsm fsm-ok" onclick="finishMapShape()" id="map-fs-finish" title="Valider" style="display:none">&#10003;</button>
         <button class="fsm fsm-cancel" onclick="cancelMapShape()" id="map-fs-cancel" title="Annuler" style="display:none">&#10005;</button>
-        <span class="fsm-sep"></span>
         <button class="fsm fsm-black" onclick="enterBlackout()" title="Mode Blackout">&#127761;</button>
-        <button class="fsm fsm-exit" onclick="exitMapFullscreen()" title="Quitter le plein écran">&#10005; QUITTER</button>
+        <button class="fsm fsm-exit" onclick="exitMapFullscreen()" title="Quitter le mode tactique">&#10005; QUITTER</button>
       </div>
     </div>
 
@@ -2910,35 +2917,56 @@ async function cloudSave(id){
 }
 async function cloudDelete(id){if(!sb)return;try{await sb.from('entries').delete().eq('id',id);}catch(err){}}
 
-/* ============ PLEIN ÉCRAN CARTE (mobile surtout) ============ */
+/* ============ MODE TACTIQUE (plein écran carte) ============ */
 var mapIsFs=false;
 function enterMapFullscreen(){
   var wrap=document.querySelector('#view-map .map-wrap');
   if(!wrap)return;
+  /* le plein écran CSS est appliqué TOUJOURS -> fiable sur tous les tél (iOS inclus) */
   wrap.classList.add('fs');mapIsFs=true;
-  /* fullscreen natif si dispo (cache la barre du navigateur sur Android) */
-  try{if(wrap.requestFullscreen)wrap.requestFullscreen().catch(function(){});
-      else if(wrap.webkitRequestFullscreen)wrap.webkitRequestFullscreen();}catch(e){}
-  /* MapLibre doit recalculer sa taille */
-  setTimeout(function(){try{if(map)map.resize();}catch(e){}},200);
-  /* Échap pour sortir */
+  document.body.style.overflow='hidden';
+  /* le plein écran natif n'est qu'un bonus (cache la barre du navigateur sur Android) */
+  try{if(wrap.requestFullscreen)wrap.requestFullscreen().catch(function(){});}catch(e){}
+  setTimeout(function(){try{if(map)map.resize();}catch(e){}},250);
   document.addEventListener('keydown',fsEscHandler);
+  initFsBarDrag();
 }
 function exitMapFullscreen(){
   var wrap=document.querySelector('#view-map .map-wrap');
   if(!wrap)return;
   wrap.classList.remove('fs');mapIsFs=false;
-  try{if(document.fullscreenElement&&document.exitFullscreen)document.exitFullscreen().catch(function(){});
-      else if(document.webkitFullscreenElement&&document.webkitExitFullscreen)document.webkitExitFullscreen();}catch(e){}
-  setTimeout(function(){try{if(map)map.resize();}catch(e){}},200);
+  document.body.style.overflow='';
+  try{if(document.fullscreenElement&&document.exitFullscreen)document.exitFullscreen().catch(function(){});}catch(e){}
+  setTimeout(function(){try{if(map)map.resize();}catch(e){}},250);
   document.removeEventListener('keydown',fsEscHandler);
 }
 function fsEscHandler(e){if(e.key==='Escape'&&mapIsFs)exitMapFullscreen();}
-/* si l'utilisateur quitte le fullscreen natif (geste système), on enlève aussi la classe */
 document.addEventListener('fullscreenchange',function(){
-  if(!document.fullscreenElement&&mapIsFs){var w=document.querySelector('#view-map .map-wrap');if(w)w.classList.remove('fs');mapIsFs=false;
-    setTimeout(function(){try{if(map)map.resize();}catch(e){}},200);}
+  /* sortie du natif via geste système : on garde le plein écran CSS, pas de bug */
+  if(!document.fullscreenElement&&mapIsFs){setTimeout(function(){try{if(map)map.resize();}catch(e){}},200);}
 });
+/* ---- déplacement de la barre d'outils par la poignée ---- */
+var fsBarDragInit=false;
+function initFsBarDrag(){
+  if(fsBarDragInit)return;fsBarDragInit=true;
+  var bar=document.getElementById('map-fs-bar'),handle=document.getElementById('fs-handle');
+  if(!bar||!handle)return;
+  var drag=false,sx=0,sy=0,bx=0,by=0;
+  function start(x,y){drag=true;var r=bar.getBoundingClientRect();bx=r.left;by=r.top;sx=x;sy=y;
+    bar.style.left=bx+'px';bar.style.top=by+'px';bar.style.right='auto';bar.style.bottom='auto';}
+  function move(x,y){if(!drag)return;
+    var nx=bx+(x-sx),ny=by+(y-sy);
+    nx=Math.max(4,Math.min(window.innerWidth-bar.offsetWidth-4,nx));
+    ny=Math.max(4,Math.min(window.innerHeight-bar.offsetHeight-4,ny));
+    bar.style.left=nx+'px';bar.style.top=ny+'px';}
+  function end(){drag=false;}
+  handle.addEventListener('mousedown',function(e){start(e.clientX,e.clientY);e.preventDefault();});
+  document.addEventListener('mousemove',function(e){move(e.clientX,e.clientY);});
+  document.addEventListener('mouseup',end);
+  handle.addEventListener('touchstart',function(e){var t=e.touches[0];start(t.clientX,t.clientY);e.preventDefault();},{passive:false});
+  document.addEventListener('touchmove',function(e){if(drag){var t=e.touches[0];move(t.clientX,t.clientY);e.preventDefault();}},{passive:false});
+  document.addEventListener('touchend',end);
+}
 
 /* ============ MODE BLACKOUT (Op de nuit) ============ */
 /* Voile noir total, luminosité mini, bloque les tapotements accidentels.
