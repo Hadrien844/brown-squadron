@@ -393,6 +393,25 @@
   .gps-btn.live{background:#c0392b;border-color:#e05a48;color:#fff;animation:gpspulse 1.6s infinite;}
   @keyframes gpspulse{0%,100%{box-shadow:0 0 0 0 rgba(192,57,43,.5);}50%{box-shadow:0 0 0 6px rgba(192,57,43,0);}}
   .gps-status{font-family:var(--mono);font-size:12px;color:var(--amber);letter-spacing:.5px;}
+  /* ===== Rôle LECTURE SEULE : on masque tous les boutons qui modifient des données ===== */
+  body.role-lecture [onclick*="new"],
+  body.role-lecture [onclick*="add"],
+  body.role-lecture [onclick*="save"],
+  body.role-lecture [onclick*="del"],
+  body.role-lecture [onclick*="remove"],
+  body.role-lecture [onclick*="edit"],
+  body.role-lecture [onclick*="clear"],
+  body.role-lecture [onclick*="import"],
+  body.role-lecture .tabbar button[data-view="view-map"]{display:none!important;}
+  /* champs de saisie désactivés visuellement en lecture seule */
+  body.role-lecture section input:not(#login-pwd):not([type=color]),
+  body.role-lecture section textarea,
+  body.role-lecture section select{opacity:.6;pointer-events:none;}
+  /* badge de rôle en haut */
+  .role-badge{font-family:var(--mono);font-size:11px;letter-spacing:1px;padding:3px 9px;border-radius:10px;
+    border:1px solid var(--line2);color:var(--aor1);background:var(--surface2);text-transform:uppercase;margin-left:8px;}
+  .role-badge.lecture{color:#7fa9c9;border-color:#3a566b;}
+  .role-badge.membre{color:#8fbf6f;border-color:#3a5a2a;}
   .blackout-toggle{border-color:#555!important;color:#999!important;}
   .blackout-toggle:hover{background:#222!important;color:#fff!important;}
   /* voile blackout : noir total, par-dessus tout, bloque tous les tapotements */
@@ -955,7 +974,22 @@ function val(id){return document.getElementById(id).value.trim();}
 /* ============ LOGIN ============ */
 /* le mot de passe n'est PAS stocké en clair : on compare son empreinte SHA-256.
    (empreinte de "BrownSquadron") */
-var APP_PWD_HASH='2f50ddcdd35dd7ed213489137cb4bcf1610018d531c8209b3523ea5285d0405c';
+/* ===== ACCÈS PAR RÔLE =====
+   3 mots de passe -> 3 rôles. Change les mots de passe en remplaçant les hash ci-dessous.
+   Pour générer un hash : tape ton mot de passe dans la console (F12) :
+     sha256hex('TON_MOT_DE_PASSE').then(console.log)
+   puis colle le résultat à la place du hash correspondant.
+
+   Mots de passe configurés (gardés hors du fichier sous forme de hash).
+   Pour en changer un : génère le hash SHA-256 du nouveau mot de passe et remplace
+   la valeur correspondante (admin / membre / lecture) ci-dessous.
+*/
+var ROLE_HASHES={
+  admin  :'89a1f2e5ccf1f478d161801ea6d4599650030142eaa64627e5f2de6181993e24',
+  membre :'a38148bb19ae460342ad3087db58a0dd8b0452fc5ea8599e295b31f5d950412c',
+  lecture:'8e9088db9b04a996466692a63da028bd4980b2a09b176a0baf61a5187556adff'
+};
+var currentRole=null;   /* 'admin' | 'membre' | 'lecture' */
 async function sha256hex(str){
   var buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));
   return [].map.call(new Uint8Array(buf),function(b){return ('0'+b.toString(16)).slice(-2);}).join('');
@@ -963,11 +997,18 @@ async function sha256hex(str){
 function tryLogin(){
   var v=document.getElementById('login-pwd').value;
   sha256hex(v).then(function(h){
-    if(h===APP_PWD_HASH){try{sessionStorage.setItem('bs_auth','1');}catch(e){}startApp();}
-    else{document.getElementById('login-err').textContent='// ACCÈS REFUSÉ';}
+    var role=null;
+    for(var r in ROLE_HASHES){if(ROLE_HASHES[r]===h){role=r;break;}}
+    if(role){
+      currentRole=role;
+      try{sessionStorage.setItem('bs_auth','1');sessionStorage.setItem('bs_role',role);}catch(e){}
+      startApp();
+    }else{
+      document.getElementById('login-err').textContent='// ACCÈS REFUSÉ';
+    }
   });
 }
-function logout(){try{sessionStorage.removeItem('bs_auth');}catch(e){}location.reload();}
+function logout(){try{sessionStorage.removeItem('bs_auth');sessionStorage.removeItem('bs_role');}catch(e){}location.reload();}
 function applyBranding(){
   document.documentElement.style.setProperty('--bs-logo','url('+LOGO_BONE+')');
   var lb=document.getElementById('login-badge');if(lb)lb.innerHTML='<img src="'+LOGO_TAN+'" alt="Brown Squadron">';
@@ -993,13 +1034,40 @@ function startApp(){
   document.getElementById('login-screen').style.display='none';
   document.getElementById('app-root').style.display='';
   if(SB_URL&&SB_KEY&&window.supabase){sb=window.supabase.createClient(SB_URL,SB_KEY);}
+  /* récupérer le rôle (au cas où on revient via session) */
+  try{if(!currentRole)currentRole=sessionStorage.getItem('bs_role')||'membre';}catch(e){currentRole='membre';}
+  applyRole();
   db=loadCache();renderAll();applyBranding();cloudRefresh();
   /* restaurer le dernier onglet ouvert (sauf si pas trouvé) */
   try{
     var last=sessionStorage.getItem('bs_lastview');
+    /* un lecteur ne peut pas revenir sur la carte */
+    if(currentRole==='lecture' && last==='view-map')last='view-home';
     if(last){var btn=document.querySelector('.tabbar button[data-view="'+last+'"]');if(btn)switchTab(btn);}
   }catch(e){}
 }
+
+/* applique les droits visuels selon le rôle */
+function applyRole(){
+  document.body.classList.remove('role-admin','role-membre','role-lecture');
+  document.body.classList.add('role-'+(currentRole||'membre'));
+  /* badge de rôle à côté du titre */
+  var tb=document.getElementById('top-badge');
+  var holder=tb?tb.parentNode:document.querySelector('header');
+  if(holder && !document.getElementById('role-badge')){
+    var b=document.createElement('span');b.id='role-badge';b.className='role-badge '+(currentRole||'');
+    holder.appendChild(b);
+  }
+  var badge=document.getElementById('role-badge');
+  if(badge){
+    badge.className='role-badge '+(currentRole||'');
+    badge.textContent = currentRole==='admin'?'ADMIN':(currentRole==='lecture'?'LECTURE SEULE':'MEMBRE');
+  }
+}
+/* garde-fou : bloque l'écriture si pas les droits (filet de sécurité) */
+function canWrite(){return currentRole==='admin'||currentRole==='membre';}
+/* seules les suppressions massives / effacement carte réservés admin */
+function canAdmin(){return currentRole==='admin';}
 
 /* ============ NAV ============ */
 function switchTab(btn){
@@ -1115,6 +1183,7 @@ function renderMembres(){
 
 /* ============ FICHE ============ */
 function newMembre(){
+  if(!canWrite()){alert('Lecture seule : tu n\'as pas les droits de modification.');return;}
   currentId=uid();db[currentId]={type:'membre',created:Date.now()};
   kitState=DEFAULT_KIT.map(function(k){return {name:k.name,grp:k.grp||'',lvl:k.lvl||0,qty:k.qty||1,has:false};});
   drillState={acte1:{done:false,level:''},acte2:{done:false,level:''},acte3:{done:false,level:''}};
@@ -1204,6 +1273,7 @@ function readForm(){
   db[currentId]=m;return m;
 }
 function saveMembre(){
+  if(!canWrite()){alert('Lecture seule : tu n\'as pas les droits de modification.');return;}
   readForm();cacheLocal();
   var st=document.getElementById('fiche-status');st.textContent='// transmission...';
   cloudSave(currentId).then(function(ok){
@@ -1441,6 +1511,7 @@ function renderOps(){
 function frDate(iso){if(!iso)return '';var p=iso.split('-');return p[2]+'/'+p[1]+'/'+p[0];}
 
 function newOp(){
+  if(!canWrite()){alert('Lecture seule : tu n\'as pas les droits de modification.');return;}
   currentOpId=uid();db[currentOpId]={type:'operation',evtype:'operation',created:Date.now()};
   opDocs=[];opPresents=[];
   fillOpForm({});showView('view-op-fiche');document.getElementById('op-status').textContent='';
@@ -1530,6 +1601,7 @@ function readOpForm(){
   db[currentOpId]=o;return o;
 }
 function saveOp(){
+  if(!canWrite()){alert('Lecture seule : tu n\'as pas les droits de modification.');return;}
   var o=readOpForm();
   if(!o.name){document.getElementById('op-status').textContent='// nom requis';return;}
   cacheLocal();
@@ -1655,6 +1727,7 @@ function renderCours(){
   }).join('');
 }
 function newCours(){
+  if(!canWrite()){alert('Lecture seule : tu n\'as pas les droits de modification.');return;}
   currentCoursId=uid();db[currentCoursId]={type:'cours',created:Date.now()};
   coursBlocks=[];fillCoursForm({});showView('view-cours-fiche');document.getElementById('cours-status').textContent='';
 }
@@ -1729,6 +1802,7 @@ function readCoursForm(){
   db[currentCoursId]=c;return c;
 }
 function saveCours(){
+  if(!canWrite()){alert('Lecture seule : tu n\'as pas les droits de modification.');return;}
   var c=readCoursForm();
   if(!c.title){document.getElementById('cours-status').textContent='// titre requis';return;}
   cacheLocal();var st=document.getElementById('cours-status');st.textContent='// transmission...';
@@ -1810,6 +1884,7 @@ function loadMapWorld(){
 }
 var mapWorldLocalTs=0;   /* dernière modif locale du calque carte */
 function saveMapWorld(){
+  if(!canWrite())return;
   mapWorldLocalTs=Date.now();
   var payload={pings:mapWorld.pings,shapes:mapWorld.shapes,stickers:mapWorld.stickers||[],bsCount:mapWorld.bsCount||0};
   db[MAP_WORLD_KEY]={type:'mapdata',data:payload};
