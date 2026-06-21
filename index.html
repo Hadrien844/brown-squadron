@@ -1126,7 +1126,7 @@
       <input type="text" id="gps-pseudo" placeholder="Ton indicatif (ex: BS-01)" maxlength="20">
       <input type="color" id="gps-color" value="#46b29d" title="Ta couleur">
       <button id="gps-btn" class="gps-btn" onclick="toggleGps()">&#128225; Activer ma position</button>
-      <button id="blackout-btn" class="gps-btn blackout-toggle" onclick="enterBlackout()">&#128065; Vision Nocturne</button>
+      <button id="blackout-btn" class="gps-btn blackout-toggle" onclick="enterBlackout()">&#127761; Mode Blackout</button>
       <button id="mapfs-btn" class="gps-btn" onclick="enterMapFullscreen()" title="Carte en mode tactique plein écran">&#9974; Mode Tactique</button>
       <span class="gps-status" id="gps-status"></span>
     </div>
@@ -1151,7 +1151,7 @@
         <button class="fsm" data-tool="veh-sticker" onclick="setMapTool('veh-sticker')" title="Véhicule">&#128663;</button>
         <button class="fsm fsm-ok" onclick="finishMapShape()" id="map-fs-finish" title="Valider" style="display:none">&#10003;</button>
         <button class="fsm fsm-cancel" onclick="cancelMapShape()" id="map-fs-cancel" title="Annuler" style="display:none">&#10005;</button>
-        <button class="fsm fsm-black" onclick="enterBlackout()" title="Vision Nocturne">&#128065;</button>
+        <button class="fsm fsm-black" onclick="enterBlackout()" title="Mode Blackout">&#127761;</button>
         <button class="fsm fsm-exit" onclick="exitMapFullscreen()" title="Quitter le mode tactique">&#10005; QUITTER</button>
       </div>
     </div>
@@ -1804,9 +1804,9 @@ function genMembrePDF(){
     '.wm{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:62%;opacity:.06;z-index:0;pointer-events:none;}'+
     'body>*:not(.wm){position:relative;z-index:1;}'+
     '.noprint{text-align:center;margin-bottom:16px;}.noprint button{background:#5a6b3b;color:#fff;border:none;padding:11px 26px;border-radius:6px;font-size:14px;font-weight:700;cursor:pointer;}'+
-    '@media print{.noprint{display:none;}}</style></head><body>'+
+    '.closebtn{position:fixed;top:10px;right:10px;z-index:9999;background:#c0392b!important;padding:14px 20px!important;font-size:16px!important;border-radius:10px!important;box-shadow:0 4px 16px rgba(0,0,0,.4);}@media print{.noprint{display:none;}}</style></head><body>'+
     '<img class="wm" src="'+LOGO_BLACK+'">'+
-    '<div class="noprint"><button onclick="window.print()">&#128424; Imprimer / PDF</button></div>'+
+    '<div class="noprint"><button onclick="window.print()">&#128424; Imprimer / PDF</button> <button onclick="window.close();setTimeout(function(){document.body.style.opacity=0.15;},200);" class="closebtn">&#10005; Fermer</button></div>'+
     '<div class="camobar"></div>'+
     '<div class="hd"><div class="b"><img src="'+LOGO_BLACK+'"></div><div><div class="t1">'+esc(m.pseudo||'—')+'</div><div class="t2">Brown Squadron &middot; Fiche membre</div></div></div>'+
     '<h2>Identité &amp; coordonnées</h2><table>'+
@@ -1952,9 +1952,9 @@ function genCalendarPDF(){
     '.camobar{height:9px;border-radius:2px;margin-bottom:14px;background:url('+CAMO_AOR2+') repeat;background-size:120px;}'+
     '.wm{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:62%;opacity:.06;z-index:0;pointer-events:none;}body>*:not(.wm){position:relative;z-index:1;}'+
     '.noprint{text-align:center;margin-bottom:16px;}.noprint button{background:#5a6b3b;color:#fff;border:none;padding:11px 26px;border-radius:6px;font-size:14px;font-weight:700;cursor:pointer;}'+
-    '@media print{.noprint{display:none;}}</style></head><body>'+
+    '.closebtn{position:fixed;top:10px;right:10px;z-index:9999;background:#c0392b!important;padding:14px 20px!important;font-size:16px!important;border-radius:10px!important;box-shadow:0 4px 16px rgba(0,0,0,.4);}@media print{.noprint{display:none;}}</style></head><body>'+
     '<img class="wm" src="'+LOGO_BLACK+'">'+
-    '<div class="noprint"><button onclick="window.print()">&#128424; Imprimer / PDF</button></div>'+
+    '<div class="noprint"><button onclick="window.print()">&#128424; Imprimer / PDF</button> <button onclick="window.close();setTimeout(function(){document.body.style.opacity=0.15;},200);" class="closebtn">&#10005; Fermer</button></div>'+
     '<div class="camobar"></div>'+
     '<div class="hd"><div class="b"><img src="'+LOGO_BLACK+'"></div><div><div class="t1">Calendrier '+calYear+'</div><div class="t2">Brown Squadron &middot; Programme &amp; inscrits</div></div></div>'+
     legend+body+
@@ -2120,9 +2120,9 @@ function genOpPDF(){
     '.camobar{height:9px;border-radius:2px;margin-bottom:14px;background:url('+CAMO_AOR2+') repeat;background-size:120px;}'+
     '.wm{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:62%;opacity:.06;z-index:0;pointer-events:none;}body>*:not(.wm){position:relative;z-index:1;}'+
     '.noprint{text-align:center;margin-bottom:16px;}.noprint button{background:'+col+';color:#fff;border:none;padding:11px 26px;border-radius:6px;font-size:14px;font-weight:700;cursor:pointer;}'+
-    '@media print{.noprint{display:none;}}</style></head><body>'+
+    '.closebtn{position:fixed;top:10px;right:10px;z-index:9999;background:#c0392b!important;padding:14px 20px!important;font-size:16px!important;border-radius:10px!important;box-shadow:0 4px 16px rgba(0,0,0,.4);}@media print{.noprint{display:none;}}</style></head><body>'+
     '<img class="wm" src="'+LOGO_BLACK+'">'+
-    '<div class="noprint"><button onclick="window.print()">&#128424; Imprimer / PDF</button></div>'+
+    '<div class="noprint"><button onclick="window.print()">&#128424; Imprimer / PDF</button> <button onclick="window.close();setTimeout(function(){document.body.style.opacity=0.15;},200);" class="closebtn">&#10005; Fermer</button></div>'+
     '<div class="camobar"></div>'+
     '<div class="hd"><div class="b"><img src="'+LOGO_BLACK+'"></div><div><div class="t1">'+esc(o.name||'Opération')+'</div><div class="t2">Brown Squadron &middot; Fiche d\'opération</div></div></div>'+
     '<span class="tag">'+(TYPE_LABEL[o.evtype]||'Événement')+'</span>'+
@@ -2321,9 +2321,9 @@ function genCoursPDF(){
     '.camobar{height:9px;border-radius:2px;margin-bottom:14px;background:url('+CAMO_AOR2+') repeat;background-size:120px;}'+
     '.wm{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:62%;opacity:.06;z-index:0;pointer-events:none;}body>*:not(.wm){position:relative;z-index:1;}'+
     '.noprint{text-align:center;margin-bottom:16px;}.noprint button{background:#4a90d9;color:#fff;border:none;padding:11px 26px;border-radius:6px;font-size:14px;font-weight:700;cursor:pointer;}'+
-    '@media print{.noprint{display:none;}}</style></head><body>'+
+    '.closebtn{position:fixed;top:10px;right:10px;z-index:9999;background:#c0392b!important;padding:14px 20px!important;font-size:16px!important;border-radius:10px!important;box-shadow:0 4px 16px rgba(0,0,0,.4);}@media print{.noprint{display:none;}}</style></head><body>'+
     '<img class="wm" src="'+LOGO_BLACK+'">'+
-    '<div class="noprint"><button onclick="window.print()">&#128424; Imprimer / PDF</button></div>'+
+    '<div class="noprint"><button onclick="window.print()">&#128424; Imprimer / PDF</button> <button onclick="window.close();setTimeout(function(){document.body.style.opacity=0.15;},200);" class="closebtn">&#10005; Fermer</button></div>'+
     '<div class="camobar"></div>'+
     '<div class="hd"><div class="b"><img src="'+LOGO_BLACK+'"></div><div><div class="t1">'+esc(c.title||'Cours')+'</div><div class="t2">Brown Squadron &middot; Fiche d\'instruction</div></div></div>'+
     (c.cat?'<span class="tag">'+esc(c.cat)+'</span>':'')+(c.instr?'<span class="tag" style="background:#777;margin-left:6px">Instructeur : '+esc(c.instr)+'</span>':'')+
@@ -2906,9 +2906,9 @@ function genMapPDF(){
       '.path .pn{font-weight:700;font-size:14px;}.path .pd{font-family:monospace;color:#d8a23a;}'+
       '.bsline{display:flex;flex-wrap:wrap;gap:6px;}.bschip{background:#5a6b3b;border:1px solid #7c9152;border-radius:14px;padding:3px 11px;font-family:monospace;font-size:12.5px;}'+
       '.noprint{text-align:center;margin-bottom:14px;}.noprint button{background:#5a6b3b;color:#fff;border:none;padding:10px 24px;border-radius:6px;font-weight:700;cursor:pointer;}'+
-      '@media print{.noprint{display:none;}body{background:#0b0e0a !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}}'+
+      '.closebtn{position:fixed;top:10px;right:10px;z-index:9999;background:#c0392b!important;padding:14px 20px!important;font-size:16px!important;border-radius:10px!important;box-shadow:0 4px 16px rgba(0,0,0,.4);}@media print{.noprint{display:none;}body{background:#0b0e0a !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}}'+
       '</style></head><body>'+
-      '<div class="noprint"><button onclick="window.print()">🖨 Imprimer / PDF</button></div>'+
+      '<div class="noprint"><button onclick="window.print()">🖨 Imprimer / PDF</button> <button onclick="window.close();setTimeout(function(){document.body.style.opacity=0.15;},200);" class="closebtn">✕ Fermer</button></div>'+
       '<div class="hd"><img src="'+LOGO_BONE+'"><div><div class="t1">CARTE TACTIQUE</div><div class="t2">Brown Squadron · Théâtre d\'opérations</div></div></div>'+
       '<img class="mapimg" src="'+img+'">'+
       '<h2>Chemins à pied</h2>'+footHtml+bsHtml+
