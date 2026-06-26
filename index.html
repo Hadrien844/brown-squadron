@@ -162,10 +162,19 @@
   .tabbar{display:flex;gap:5px;margin-bottom:14px;}
   .tabbar button{flex:1;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);color:var(--muted);padding:10px 3px;cursor:pointer;font-family:var(--mono);
     display:flex;flex-direction:column;align-items:center;gap:4px;transition:.12s;text-transform:uppercase;letter-spacing:.5px;}
-  .tabbar button .ico{font-size:18px;line-height:1;color:var(--muted);transition:color .18s;
-    -webkit-text-fill-color:currentColor;}
-  .tabbar button:hover .ico{color:var(--tanl,#d8c089);}
-  .tabbar button.on .ico{color:#1a1605;}
+  .tabbar button .ico{font-size:18px;line-height:1;transition:color .18s,filter .18s;}
+  .tabbar button:hover .ico{filter:brightness(1.15);}
+  .tabbar button.on .ico{filter:none;}
+  /* Accueil et Calendrier en glyphe sable mono */
+  .tabbar button[data-view="view-home"] .ico,
+  .tabbar button[data-view="view-calendrier"] .ico{color:var(--muted);-webkit-text-fill-color:var(--muted);}
+  .tabbar button[data-view="view-home"].on .ico,
+  .tabbar button[data-view="view-calendrier"].on .ico{color:#1a1605;-webkit-text-fill-color:#1a1605;}
+  /* Membres : logo Brown Squadron */
+  .ico-bslogo{display:inline-block;width:20px;height:20px;background:var(--bs-logo) center/contain no-repeat;
+    filter:brightness(0) saturate(100%);opacity:.78;}
+  .tabbar button:hover .ico-bslogo{opacity:1;}
+  .tabbar button.on .ico-bslogo{filter:brightness(0) saturate(100%);opacity:1;}
   /* ===== COMMS (chat) ===== */
   .comms-wrap{display:flex;flex-direction:column;height:72vh;background:var(--surface);border:1px solid var(--line2);border-radius:14px;overflow:hidden;}
   .comms-log{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:9px;}
@@ -180,6 +189,62 @@
   .comms-send{flex:0 0 50px;background:var(--aor1);border:none;border-radius:9px;color:#1a1605;font-size:18px;font-weight:800;cursor:pointer;transition:filter .15s,transform .12s;}
   .comms-send:hover{filter:brightness(1.1);}.comms-send:active{transform:scale(.95);}
   .comms-empty{color:var(--dim);font-family:var(--mono);font-size:12px;text-align:center;margin:auto;}
+  /* canaux (style Teams) */
+  .comms-channels{display:flex;gap:6px;align-items:center;margin-bottom:10px;}
+  .comms-chan-list{display:flex;gap:6px;overflow-x:auto;flex:1;padding-bottom:2px;}
+  .comms-chan{flex:0 0 auto;background:var(--surface2);border:1px solid var(--line2);border-radius:9px;
+    color:var(--muted);font-family:var(--mono);font-size:12px;padding:8px 13px;cursor:pointer;white-space:nowrap;transition:.15s;}
+  .comms-chan:hover{border-color:var(--aor1);color:var(--txt);}
+  .comms-chan.on{background:linear-gradient(180deg,var(--aor1),var(--aor1b));color:#1a1605;border-color:var(--aor1b);font-weight:700;}
+  .comms-chan .cc-hash{opacity:.6;margin-right:3px;}
+  .comms-newchan{flex:0 0 auto;background:var(--surface);border:1px dashed var(--line2);border-radius:9px;
+    color:var(--aor1);font-family:var(--mono);font-size:12px;padding:8px 12px;cursor:pointer;white-space:nowrap;transition:.15s;}
+  .comms-newchan:hover{border-color:var(--aor1);background:var(--surface2);}
+  /* ===== Arborescence Direction (style SharePoint / M365) ===== */
+  .sp-layout{display:flex;gap:14px;align-items:flex-start;}
+  .sp-tree{flex:0 0 230px;background:var(--surface);border:1px solid var(--line2);border-radius:12px;padding:10px;}
+  .sp-root{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;color:var(--muted);
+    padding:7px 9px;letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--line);margin-bottom:6px;}
+  .sp-ico-home{color:var(--aor1);}
+  .sp-folder{display:flex;align-items:center;gap:9px;width:100%;text-align:left;cursor:pointer;
+    background:none;border:1px solid transparent;border-radius:8px;padding:9px 10px;color:var(--txt);
+    font-size:13.5px;transition:.15s;margin-bottom:2px;}
+  .sp-folder:hover{background:var(--surface2);}
+  .sp-folder.on{background:rgba(184,160,106,.12);border-color:rgba(184,160,106,.4);}
+  .sp-fico{font-size:18px;color:#7c9152;filter:saturate(1.2);}
+  .sp-folder.on .sp-fico{color:#9bbf6a;}
+  .sp-fname{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .sp-fcount{font-family:var(--mono);font-size:10.5px;color:var(--dim);background:var(--bg2);border-radius:9px;padding:1px 8px;}
+  .sp-main{flex:1;min-width:0;}
+  .sp-breadcrumb{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;margin-bottom:10px;padding:0 2px;}
+  .sp-bc-root{color:var(--muted);}.sp-bc-sep{color:var(--dim);}.sp-bc-cur{color:var(--aor1);font-weight:700;}
+  .sp-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:10px;}
+  .sp-upload{background:linear-gradient(180deg,var(--aor1),var(--aor1b));color:#1a1605;border:none;border-radius:9px;
+    font-family:var(--mono);font-size:12px;font-weight:700;padding:10px 15px;cursor:pointer;transition:filter .15s,transform .12s;}
+  .sp-upload:hover{filter:brightness(1.08);}.sp-upload:active{transform:scale(.97);}
+  .sp-count{font-family:var(--mono);font-size:11px;color:var(--dim);}
+  .sp-list{background:var(--surface);border:1px solid var(--line2);border-radius:12px;overflow:hidden;}
+  .sp-list-head{display:grid;grid-template-columns:1fr 110px 40px;gap:10px;padding:10px 14px;
+    font-family:var(--mono);font-size:10.5px;letter-spacing:1px;color:var(--dim);text-transform:uppercase;border-bottom:1px solid var(--line2);}
+  .sp-row{display:grid;grid-template-columns:1fr 110px 40px;gap:10px;align-items:center;padding:11px 14px;
+    cursor:pointer;border-bottom:1px solid var(--line);transition:background .14s;}
+  .sp-row:last-child{border-bottom:none;}
+  .sp-row:hover{background:var(--surface2);}
+  .sp-row-name{display:flex;align-items:center;gap:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;}
+  .sp-row-ico{font-size:18px;flex-shrink:0;}
+  .sp-row-date{font-family:var(--mono);font-size:11.5px;color:var(--muted);}
+  .sp-row-del{background:none;border:none;color:var(--dim);font-size:17px;cursor:pointer;padding:2px 6px;border-radius:6px;transition:.14s;}
+  .sp-row-del:hover{color:#fff;background:var(--op);}
+  .sp-empty{text-align:center;padding:50px 20px;color:var(--dim);}
+  .sp-empty-ico{font-size:46px;margin-bottom:10px;opacity:.5;}
+  @media(max-width:760px){
+    .sp-layout{flex-direction:column;}
+    .sp-tree{flex:1 1 auto;width:100%;display:flex;flex-wrap:wrap;gap:6px;}
+    .sp-tree .sp-root{width:100%;}
+    .sp-folder{width:auto;flex:1 1 45%;}
+    .sp-list-head,.sp-row{grid-template-columns:1fr 70px 36px;}
+    .sp-row-date{font-size:10px;}
+  }
   /* overlay attente PDF */
   #pdf-wait{display:none;position:fixed;inset:0;z-index:99998;background:rgba(7,9,6,.92);
     align-items:center;justify-content:center;backdrop-filter:blur(3px);}
@@ -634,6 +699,12 @@
   body.role-lecture #view-direction textarea,
   body.role-lecture #view-direction select{opacity:.6;pointer-events:none;}
   body.role-lecture .kititem .cb{pointer-events:auto!important;opacity:1!important;}
+  body.role-lecture .kititem input[type=checkbox]{pointer-events:auto!important;opacity:1!important;}
+  /* lecture seule : pas d'intégration PDF/photo/lien/document ; l'export/édition PDF reste autorisé */
+  body.role-lecture .cours-addbar,
+  body.role-lecture #doc-drop,
+  body.role-lecture .dir-upload,
+  body.role-lecture .dir-add{display:none!important;}
   /* badge de rôle en haut */
   .role-badge{font-family:var(--mono);font-size:11px;letter-spacing:1px;padding:3px 9px;border-radius:10px;
     border:1px solid var(--line2);color:var(--aor1);background:var(--surface2);text-transform:uppercase;margin-left:8px;}
@@ -859,13 +930,13 @@
 
   <div class="tabbar" id="tabbar">
     <button class="on" data-view="view-home" onclick="switchTab(this)"><span class="ico">&#9737;</span><span class="lbl">Accueil</span></button>
-    <button data-view="view-membres" onclick="switchTab(this)"><span class="ico">&#9650;</span><span class="lbl">Membres</span></button>
+    <button data-view="view-membres" onclick="switchTab(this)"><span class="ico ico-bslogo"></span><span class="lbl">Membres</span></button>
     <button data-view="view-calendrier" onclick="switchTab(this)"><span class="ico">&#9636;</span><span class="lbl">Calendrier</span></button>
-    <button data-view="view-operations" onclick="switchTab(this)"><span class="ico">&#10010;</span><span class="lbl">Op&eacute;rations</span></button>
-    <button data-view="view-drill" onclick="switchTab(this)"><span class="ico">&#9678;</span><span class="lbl">Drill</span></button>
-    <button data-view="view-map" onclick="switchTab(this)"><span class="ico">&#9673;</span><span class="lbl">Map</span></button>
-    <button data-view="view-comms" onclick="switchTab(this)"><span class="ico">&#9889;</span><span class="lbl">Comms</span></button>
-    <button data-view="view-direction" data-admin="1" onclick="switchTab(this)"><span class="ico">&#9707;</span><span class="lbl">Direction</span></button>
+    <button data-view="view-operations" onclick="switchTab(this)"><span class="ico">&#127758;</span><span class="lbl">Op&eacute;rations</span></button>
+    <button data-view="view-drill" onclick="switchTab(this)"><span class="ico">&#128214;</span><span class="lbl">Drill</span></button>
+    <button data-view="view-map" onclick="switchTab(this)"><span class="ico">&#127760;</span><span class="lbl">Map</span></button>
+    <button data-view="view-comms" onclick="switchTab(this)"><span class="ico">&#128172;</span><span class="lbl">Comms</span></button>
+    <button data-view="view-direction" data-admin="1" onclick="switchTab(this)"><span class="ico">&#128193;</span><span class="lbl">Direction</span></button>
   </div>
 
   <div class="collab" id="collab-status"></div>
@@ -1061,7 +1132,7 @@
           <button class="ghost" type="button" onclick="openMapForOp()" style="flex:1">&#127758; Placer / voir sur la carte</button>
         </div>
       </div>
-      <p class="op-hint" style="margin-top:8px">Le ping principal de l'opération et ces coordonnées se synchronisent : déplace le ping sur la carte ou tape les coordonnées ici.</p>
+      <p class="op-hint" style="margin-top:8px">Le ping cible de l'opération est positionné <b>uniquement</b> par les coordonnées GPS ci-dessus (tous formats acceptés : décimal, DMS, N/S/E/O). Il n'est pas déplaçable à la main sur la carte.</p>
     </section>
 
     <section>
@@ -1236,6 +1307,10 @@
       <div><h2 class="text-tan tracking-widest">Comms</h2><p class="view-sub">// Liaison radio texte &mdash; temps r&eacute;el</p></div>
       <span id="comms-status" class="font-mono text-[10px] tracking-widest text-dim uppercase">// LINK</span>
     </div>
+    <div class="comms-channels">
+      <div id="comms-chan-list" class="comms-chan-list"></div>
+      <button class="comms-newchan" onclick="newCommsChannel()" title="Nouveau canal">&#43; Canal</button>
+    </div>
     <div class="comms-wrap">
       <div id="comms-log" class="comms-log"></div>
       <div class="comms-bar">
@@ -1254,8 +1329,13 @@
       <button class="add-btn transition hover:brightness-110 active:scale-95" onclick="document.getElementById('dir-file-input').click()"><span class="plus">+</span> PDF</button>
     </div>
     <input type="file" id="dir-file-input" accept="application/pdf,image/*" multiple style="display:none" onchange="addDirDocs(this.files)">
-    <div class="dir-theme-bar" id="dir-theme-bar"></div>
-    <div id="dir-docs"></div>
+    <div class="sp-layout">
+      <div class="sp-tree" id="sp-tree"></div>
+      <div class="sp-main">
+        <div class="sp-breadcrumb" id="sp-breadcrumb"></div>
+        <div id="dir-docs" class="sp-content"></div>
+      </div>
+    </div>
   </div>
 
 </div>
@@ -1554,19 +1634,40 @@ function viewDirDoc(ts){
   else{w.document.write('<iframe src="'+d.data+'" style="border:0;width:100%;height:100vh"></iframe>');}
 }
 function renderDirDocs(){
-  var bar=document.getElementById('dir-theme-bar');if(!bar)return;
-  bar.innerHTML=DIR_THEMES.map(function(t){
-    var n=dirData().filter(function(d){return (d.theme||'Direction')===t;}).length;
-    return '<button class="dir-theme'+(t===dirCurTheme?' on':'')+'" onclick="dirCurTheme=\''+t.replace(/'/g,"\\'")+'\';renderDirDocs();">'+esc(t)+' <span class="dt-c">'+n+'</span></button>';
-  }).join('');
-  var box=document.getElementById('dir-docs');if(!box)return;
+  var tree=document.getElementById('sp-tree');
+  var bc=document.getElementById('sp-breadcrumb');
+  var box=document.getElementById('dir-docs');
+  if(!tree||!box)return;
+  /* colonne gauche : arbre de dossiers (icône dossier verte M365) */
+  tree.innerHTML='<div class="sp-root"><span class="sp-ico-home">&#9750;</span> Direction</div>'+
+    DIR_THEMES.map(function(t){
+      var n=dirData().filter(function(d){return (d.theme||'Direction')===t;}).length;
+      var open=(t===dirCurTheme);
+      return '<button class="sp-folder'+(open?' on':'')+'" onclick="dirCurTheme=\''+t.replace(/'/g,"\\'")+'\';renderDirDocs();">'+
+        '<span class="sp-fico">'+(open?'&#128194;':'&#128193;')+'</span>'+
+        '<span class="sp-fname">'+esc(t)+'</span>'+
+        '<span class="sp-fcount">'+n+'</span></button>';
+    }).join('');
+  /* fil d'Ariane */
+  if(bc)bc.innerHTML='<span class="sp-bc-root">Direction</span><span class="sp-bc-sep">›</span><span class="sp-bc-cur">'+esc(dirCurTheme)+'</span>';
+  /* contenu : liste type explorateur (icône, nom, date) */
   var list=dirData().filter(function(d){return (d.theme||'Direction')===dirCurTheme;});
-  if(!list.length){box.innerHTML='<div class="empty"><div class="big">&#128193;</div>Aucun document dans &laquo; '+esc(dirCurTheme)+' &raquo;.</div>';return;}
-  box.innerHTML='<div class="doc-grid">'+list.map(function(d){
-    var isImg=(d.type||'').indexOf('image')===0;
-    var inner=isImg?'<img src="'+d.data+'">':'<div class="fic">&#128196;</div><div class="fnm">'+esc(d.name)+'</div>';
-    return '<div class="doc-tile" onclick="viewDirDoc('+d.ts+')"><button class="dx" onclick="event.stopPropagation();delDirDoc('+d.ts+')">&times;</button>'+inner+'</div>';
-  }).join('')+'</div>';
+  var canEdit=(typeof canAdmin==='function')?canAdmin():true;
+  var head='<div class="sp-toolbar">'+
+    (canEdit?'<button class="sp-upload" onclick="document.getElementById(\'dir-file-input\').click()">&#11014; Importer un fichier</button>':'')+
+    '<span class="sp-count">'+list.length+' élément'+(list.length>1?'s':'')+'</span></div>';
+  if(!list.length){box.innerHTML=head+'<div class="sp-empty"><div class="sp-empty-ico">&#128193;</div>Dossier vide</div>';return;}
+  box.innerHTML=head+'<div class="sp-list"><div class="sp-list-head"><span>Nom</span><span>Modifié</span><span></span></div>'+
+    list.sort(function(a,b){return (b.ts||0)-(a.ts||0);}).map(function(d){
+      var isImg=(d.type||'').indexOf('image')===0;
+      var ic=isImg?'&#128443;':'&#128196;';
+      var dt='';try{var x=new Date(d.ts);dt=('0'+x.getDate()).slice(-2)+'/'+('0'+(x.getMonth()+1)).slice(-2)+'/'+x.getFullYear();}catch(e){}
+      return '<div class="sp-row" onclick="viewDirDoc('+d.ts+')">'+
+        '<span class="sp-row-name"><span class="sp-row-ico">'+ic+'</span>'+esc(d.name)+'</span>'+
+        '<span class="sp-row-date">'+dt+'</span>'+
+        (canEdit?'<button class="sp-row-del" onclick="event.stopPropagation();delDirDoc('+d.ts+')" title="Supprimer">&times;</button>':'<span></span>')+
+        '</div>';
+    }).join('')+'</div>';
 }
 
 /* ============ DRAG DES ONGLETS ============ */
@@ -2779,7 +2880,8 @@ function addPingMarker(p,isOp){
       'background:'+p.color+';border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.4);cursor:pointer;';
   }
   var anchor=(p.car||isOp||p.rdv)?'center':'bottom';
-  var marker=new maplibregl.Marker({element:el,draggable:true,anchor:anchor}).setLngLat([p.lon,p.lat]).addTo(map);
+  /* le ping d'opération (cible) n'est PAS déplaçable : il est géré uniquement par le champ coordonnées GPS */
+  var marker=new maplibregl.Marker({element:el,draggable:!isOp,anchor:anchor}).setLngLat([p.lon,p.lat]).addTo(map);
   if(p.note){
     var lbl=document.createElement('div');lbl.className='map-ping-lbl';lbl.textContent=p.note;
     var lm=new maplibregl.Marker({element:lbl,anchor:'bottom',offset:[0,-20]}).setLngLat([p.lon,p.lat]).addTo(map);
@@ -3159,13 +3261,45 @@ function mapFocusOp(id){
 }
 
 /* synchro fiche opération <-> carte */
+/* parse à peu près tous les formats de coordonnées GPS courants :
+   "43.9034, 4.8270" | "43.9034 4.8270" | "N43.9 E4.8"
+   "43°54'12\"N 4°49'37\"E" | "43 54 12 N, 4 49 37 E" | "43°54.2'N, 4°49.6'E" */
+function parseAnyCoord(str){
+  if(!str)return null;
+  var s=str.trim().replace(/,/g,' ').replace(/\s+/g,' ');
+  // 1) format décimal simple : deux nombres
+  var dec=s.match(/^(-?\d+(?:\.\d+)?)[ ]+(-?\d+(?:\.\d+)?)$/);
+  if(dec){var la=parseFloat(dec[1]),lo=parseFloat(dec[2]);
+    if(Math.abs(la)<=90&&Math.abs(lo)<=180)return{lat:la,lon:lo};}
+  // 2) format avec hémisphères et/ou DMS : on découpe en deux moitiés (lat puis lon)
+  // on cherche les lettres N/S puis E/O/W
+  function dmsToDec(part){
+    if(!part)return null;
+    var neg=/[swo]/i.test(part);
+    var nums=part.match(/-?\d+(?:\.\d+)?/g);
+    if(!nums||!nums.length)return null;
+    var deg=parseFloat(nums[0]);
+    var min=nums[1]?parseFloat(nums[1]):0;
+    var sec=nums[2]?parseFloat(nums[2]):0;
+    var val=Math.abs(deg)+min/60+sec/3600;
+    if(neg||deg<0)val=-val;
+    return val;
+  }
+  // séparer sur la frontière entre lat et lon : présence de N/S puis E/W/O
+  var mm=s.match(/^(.*?[nsNS])\s*(.*[ewoEWO].*)$/);
+  if(mm){var la2=dmsToDec(mm[1]),lo2=dmsToDec(mm[2]);
+    if(la2!=null&&lo2!=null&&Math.abs(la2)<=90&&Math.abs(lo2)<=180)return{lat:la2,lon:lo2};}
+  // 3) deux groupes DMS sans lettres, séparés : "43 54 12 / 4 49 37"
+  var groups=s.split(/[\/|]/);
+  if(groups.length===2){var la3=dmsToDec(groups[0]),lo3=dmsToDec(groups[1]);
+    if(la3!=null&&lo3!=null&&Math.abs(la3)<=90&&Math.abs(lo3)<=180)return{lat:la3,lon:lo3};}
+  return null;
+}
 function onGpsTyped(){
-  var v=document.getElementById('o_gps').value.trim();
-  var m=v.match(/(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)/);
-  if(!m)return;
-  var lat=parseFloat(m[1]),lon=parseFloat(m[2]);
-  if(isNaN(lat)||isNaN(lon))return;
-  if(db[currentOpId]){db[currentOpId].gps={lat:lat,lon:lon};}
+  var v=document.getElementById('o_gps').value;
+  var c=parseAnyCoord(v);
+  if(!c)return;
+  if(db[currentOpId]){db[currentOpId].gps={lat:c.lat,lon:c.lon};}
 }
 function setGpsField(lat,lon){
   var f=document.getElementById('o_gps');if(f)f.value=lat.toFixed(5)+', '+lon.toFixed(5);
@@ -3286,27 +3420,38 @@ function startHeading(){
   }else{bindHeading();}
 }
 function bindHeading(){
+  /* 'absolute' = référence au nord magnétique réel (le plus fiable). On le privilégie. */
   window.addEventListener('deviceorientationabsolute',onHeading,true);
   window.addEventListener('deviceorientation',onHeading,true);
 }
+var _headingHasAbsolute=false;
 function onHeading(e){
-  var h=null;
-  if(typeof e.webkitCompassHeading==='number'){h=e.webkitCompassHeading;}      /* iOS : 0 = nord */
-  else if(e.absolute&&typeof e.alpha==='number'){h=360-e.alpha;}                /* Android absolu */
-  if(h==null||isNaN(h))return;
-  h=(h+360)%360;
-  /* lissage circulaire pour éviter que la flèche tremble quand on est immobile */
-  if(gpsHeading==null){gpsHeading=h;}
-  else{
-    var diff=((h-gpsHeading+540)%360)-180;   /* écart signé -180..180 */
-    if(Math.abs(diff)<8)return;              /* ignore le micro-jitter */
-    gpsHeading=(gpsHeading+diff*0.25+360)%360; /* approche douce vers la nouvelle valeur */
+  var h=null,absolute=false;
+  if(typeof e.webkitCompassHeading==='number'&&!isNaN(e.webkitCompassHeading)){
+    h=e.webkitCompassHeading;absolute=true;                 /* iOS : 0 = nord, sens horaire */
+  }else if(typeof e.alpha==='number'){
+    /* Android : alpha = rotation autour de l'axe Z. Cap = 360 - alpha (avec compensation écran) */
+    var adjust=(screen.orientation&&typeof screen.orientation.angle==='number')?screen.orientation.angle:(window.orientation||0);
+    h=(360-e.alpha+adjust)%360;
+    absolute=!!e.absolute;
   }
+  if(h==null||isNaN(h))return;
+  /* si on a déjà reçu un évènement "absolu" (boussole vraie), on ignore les évènements relatifs moins fiables */
+  if(absolute)_headingHasAbsolute=true;
+  else if(_headingHasAbsolute)return;
+  h=(h+360)%360;
+  if(gpsHeading==null){gpsHeading=h;updateMyArrow();return;}
+  var diff=((h-gpsHeading+540)%360)-180;     /* écart signé -180..180 */
+  if(Math.abs(diff)<1.2)return;              /* ignore seulement le bruit infime */
+  /* lissage proportionnel : rapide sur les grands écarts (tu tournes), doux sur les petits (anti-tremblement) */
+  var factor=Math.abs(diff)>45?0.9:(Math.abs(diff)>15?0.55:0.3);
+  gpsHeading=(gpsHeading+diff*factor+360)%360;
   updateMyArrow();
 }
 function stopHeading(){
   window.removeEventListener('deviceorientationabsolute',onHeading,true);
   window.removeEventListener('deviceorientation',onHeading,true);
+  _headingHasAbsolute=false;
 }
 function updateMyArrow(){
   var ex=gpsMarkers[gpsMyPseudo];if(!ex||!ex.arrow)return;
@@ -3594,8 +3739,41 @@ function showPdfWait(on){
   }
   el.style.display=on?'flex':'none';
 }
-/* ============ COMMS — chat texte temps réel ============ */
-var commsChannel=null,commsPoll=null,commsLoaded=false;
+/* ============ COMMS — chat multi-canaux temps réel (style Teams) ============ */
+var commsChannel=null,commsPoll=null,commsCurChan='general';
+function commsChannels(){
+  /* canaux = Général + ceux créés manuellement (stockés dans entries) + un par opération */
+  var list=[{id:'general',name:'Général'}];
+  try{
+    var custom=(db['__commschans__']&&db['__commschans__'].data&&db['__commschans__'].data.list)||[];
+    custom.forEach(function(c){list.push({id:c.id,name:c.name});});
+  }catch(e){}
+  /* opérations -> canal dédié */
+  try{operationsOf().forEach(function(o){if(o.name)list.push({id:'op_'+o._id,name:o.name});});}catch(e){}
+  /* dédoublonnage */
+  var seen={},out=[];list.forEach(function(c){if(!seen[c.id]){seen[c.id]=1;out.push(c);}});
+  return out;
+}
+function renderCommsChannels(){
+  var box=document.getElementById('comms-chan-list');if(!box)return;
+  var chans=commsChannels();
+  if(!chans.some(function(c){return c.id===commsCurChan;}))commsCurChan='general';
+  box.innerHTML=chans.map(function(c){
+    return '<button class="comms-chan'+(c.id===commsCurChan?' on':'')+'" onclick="switchCommsChan(\''+c.id+'\')">'+
+      '<span class="cc-hash">#</span>'+esc(c.name)+'</button>';
+  }).join('');
+}
+function switchCommsChan(id){commsCurChan=id;renderCommsChannels();loadComms();}
+function newCommsChannel(){
+  var name=prompt('Nom du nouveau canal (sujet, mission, équipe...) :');
+  if(!name||!name.trim())return;name=name.trim();
+  var id='c_'+Date.now().toString(36);
+  var cur=(db['__commschans__']&&db['__commschans__'].data&&db['__commschans__'].data.list)||[];
+  cur.push({id:id,name:name});
+  db['__commschans__']={type:'commschans',data:{list:cur}};
+  cacheLocal();if(sb)cloudSave('__commschans__');
+  commsCurChan=id;renderCommsChannels();loadComms();
+}
 function commsMyCall(){
   var el=document.getElementById('comms-call');
   var v=el&&el.value.trim();
@@ -3603,22 +3781,26 @@ function commsMyCall(){
   return v||'';
 }
 function enterComms(){
-  /* pré-remplir l'indicatif depuis le GPS ou la mémoire */
   var el=document.getElementById('comms-call');
   if(el&&!el.value){try{el.value=localStorage.getItem('bs_comms_call')||(typeof gpsMyPseudo!=='undefined'?gpsMyPseudo:'')||'';}catch(e){}}
+  renderCommsChannels();
   loadComms();
   subscribeComms();
 }
 function loadComms(){
   if(!sb){renderComms([]);return;}
-  sb.from('messages').select('*').order('created_at',{ascending:true}).limit(200).then(function(r){
+  sb.from('messages').select('*').eq('channel',commsCurChan).order('created_at',{ascending:true}).limit(200).then(function(r){
     if(r&&r.data){renderComms(r.data);}
+    else if(r&&r.error){
+      /* si la colonne channel n'existe pas encore, on recharge sans filtre */
+      sb.from('messages').select('*').order('created_at',{ascending:true}).limit(200).then(function(r2){if(r2&&r2.data)renderComms(r2.data);});
+    }
   });
 }
 function renderComms(rows){
   var box=document.getElementById('comms-log');if(!box)return;
   var me=commsMyCall();
-  if(!rows.length){box.innerHTML='<div class="comms-empty">// AUCUN MESSAGE — OUVRE LA LIAISON</div>';return;}
+  if(!rows.length){box.innerHTML='<div class="comms-empty">// CANAL VIDE — OUVRE LA LIAISON</div>';return;}
   box.innerHTML=rows.map(function(m){
     var mine=(m.callsign&&me&&m.callsign.toUpperCase()===me.toUpperCase());
     var t='';try{var d=new Date(m.created_at);t=('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);}catch(e){}
@@ -3634,9 +3816,11 @@ function sendComms(){
   try{localStorage.setItem('bs_comms_call',call);}catch(e){}
   if(!sb){return;}
   inp.value='';
-  sb.from('messages').insert({callsign:call,body:body,created_at:new Date().toISOString()}).then(function(r){
-    if(r&&r.error){document.getElementById('comms-status').textContent='// ECHEC ENVOI';}
-    else{loadComms();}
+  sb.from('messages').insert({callsign:call,body:body,channel:commsCurChan,created_at:new Date().toISOString()}).then(function(r){
+    if(r&&r.error){
+      /* fallback si colonne channel absente */
+      sb.from('messages').insert({callsign:call,body:body,created_at:new Date().toISOString()}).then(function(){loadComms();});
+    }else{loadComms();}
   });
 }
 function subscribeComms(){
@@ -3649,7 +3833,8 @@ function subscribeComms(){
     }catch(e){}
   }
   if(!commsPoll)commsPoll=setInterval(function(){
-    if(document.getElementById('view-comms')&&document.getElementById('view-comms').classList.contains('active'))loadComms();
+    var v=document.getElementById('view-comms');
+    if(v&&v.classList.contains('active'))loadComms();
   },6000);
   var st=document.getElementById('comms-status');if(st)st.textContent='// LINK ✓';
 }
