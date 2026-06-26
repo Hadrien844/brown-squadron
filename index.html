@@ -137,7 +137,7 @@
   }
   .pwd-wrap{position:relative;margin-bottom:13px;}
   .pwd-eye{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;
-    color:var(--dim);font-size:18px;cursor:pointer;padding:6px;line-height:1;transition:color .15s;}
+    color:var(--muted);cursor:pointer;padding:6px;line-height:0;transition:color .15s;display:flex;align-items:center;}
   .pwd-eye:hover,.pwd-eye.on{color:var(--aor1);}
 
   /* ===== STRUCTURE ===== */
@@ -171,31 +171,57 @@
     filter:brightness(0) invert(1);opacity:1;}
   .tabbar button:hover .ico-bslogo{opacity:1;}
   .tabbar button.on .ico-bslogo{filter:brightness(0);opacity:1;}
-  /* ===== COMMS (chat) ===== */
-  .comms-wrap{display:flex;flex-direction:column;height:72vh;background:var(--surface);border:1px solid var(--line2);border-radius:14px;overflow:hidden;}
+  /* ===== COMMS (chat type Teams/WhatsApp, vertical, mobile-first) ===== */
+  .tchat{display:flex;gap:12px;height:74vh;}
+  .tchat-side{flex:0 0 290px;display:flex;flex-direction:column;background:var(--surface);
+    border:1px solid var(--line2);border-radius:14px;overflow:hidden;}
+  .tchat-side-top{display:flex;gap:6px;padding:9px;border-bottom:1px solid var(--line2);}
+  .tchat-side-top input{flex:1;background:var(--bg2);border:1px solid var(--line2);border-radius:9px;
+    color:var(--txt);font-size:14px;padding:9px 11px;}
+  .tchat-new{flex:0 0 40px;background:var(--aor1);border:none;border-radius:9px;color:#1a1605;font-size:20px;font-weight:800;cursor:pointer;}
+  .tchat-list{flex:1;overflow-y:auto;padding:6px;display:flex;flex-direction:column;gap:3px;}
+  .tconv{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:10px;cursor:pointer;
+    border:1px solid transparent;transition:background .14s;position:relative;}
+  .tconv:hover{background:var(--surface2);}
+  .tconv.on{background:rgba(184,160,106,.13);border-color:rgba(184,160,106,.35);}
+  .tconv-av{flex:0 0 40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(160deg,var(--surface3),var(--bg2));border:1px solid var(--line2);
+    font-family:var(--mono);font-size:15px;color:var(--aor1);font-weight:700;text-transform:uppercase;}
+  .tconv-mid{flex:1;min-width:0;}
+  .tconv-name{font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .tconv-last{font-size:11.5px;color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--mono);margin-top:2px;}
+  .tchat-drag{cursor:grab;color:var(--dim);font-size:13px;padding:0 2px;}
+  .tchat-main{flex:1;display:flex;flex-direction:column;background:var(--surface);
+    border:1px solid var(--line2);border-radius:14px;overflow:hidden;min-width:0;}
+  .tchat-conv-head{display:flex;align-items:center;gap:10px;padding:11px 13px;border-bottom:1px solid var(--line2);background:var(--bg2);}
+  .tchat-back{display:none;background:none;border:none;color:var(--aor1);font-size:21px;cursor:pointer;padding:2px 6px;}
+  .tchat-conv-name{flex:1;font-family:var(--mono);font-size:13px;color:var(--tan);letter-spacing:1px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .tchat-del-conv{background:none;border:none;color:var(--dim);font-size:16px;cursor:pointer;padding:4px 7px;border-radius:7px;transition:.14s;}
+  .tchat-del-conv:hover{color:#fff;background:var(--op);}
   .comms-log{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:9px;}
   .comms-msg{max-width:82%;padding:9px 13px;border-radius:12px;background:var(--bg2);border:1px solid var(--line);
-    font-size:14px;line-height:1.4;align-self:flex-start;animation:viewIn .25s ease both;}
+    font-size:14px;line-height:1.4;align-self:flex-start;position:relative;}
   .comms-msg.mine{align-self:flex-end;background:linear-gradient(160deg,rgba(90,107,59,.35),rgba(90,107,59,.18));border-color:var(--aor2b);}
   .comms-msg .who{font-family:var(--mono);font-size:10.5px;color:var(--aor1);letter-spacing:1px;margin-bottom:3px;text-transform:uppercase;}
   .comms-msg .when{font-family:var(--mono);font-size:9px;color:var(--dim);margin-top:4px;text-align:right;}
+  .comms-msg .msg-del{position:absolute;top:4px;right:5px;background:rgba(0,0,0,.3);border:none;color:#e88;
+    font-size:12px;cursor:pointer;border-radius:5px;padding:1px 5px;opacity:0;transition:opacity .15s;}
+  .comms-msg:hover .msg-del{opacity:1;}
   .comms-bar{display:flex;gap:7px;padding:10px;border-top:1px solid var(--line2);background:var(--bg2);}
-  .comms-bar #comms-call{flex:0 0 96px;background:var(--surface2);border:1px solid var(--line2);border-radius:9px;color:var(--aor1);font-family:var(--mono);font-size:13px;padding:11px 9px;}
+  .comms-bar #comms-call{flex:0 0 92px;background:var(--surface2);border:1px solid var(--line2);border-radius:9px;color:var(--aor1);font-family:var(--mono);font-size:13px;padding:11px 9px;}
   .comms-bar #comms-input{flex:1;background:var(--surface2);border:1px solid var(--line2);border-radius:9px;color:var(--txt);font-size:15px;padding:11px 13px;}
   .comms-send{flex:0 0 50px;background:var(--aor1);border:none;border-radius:9px;color:#1a1605;font-size:18px;font-weight:800;cursor:pointer;transition:filter .15s,transform .12s;}
   .comms-send:hover{filter:brightness(1.1);}.comms-send:active{transform:scale(.95);}
   .comms-empty{color:var(--dim);font-family:var(--mono);font-size:12px;text-align:center;margin:auto;}
-  /* canaux (style Teams) */
-  .comms-channels{display:flex;gap:6px;align-items:center;margin-bottom:10px;}
-  .comms-chan-list{display:flex;gap:6px;overflow-x:auto;flex:1;padding-bottom:2px;}
-  .comms-chan{flex:0 0 auto;background:var(--surface2);border:1px solid var(--line2);border-radius:9px;
-    color:var(--muted);font-family:var(--mono);font-size:12px;padding:8px 13px;cursor:pointer;white-space:nowrap;transition:.15s;}
-  .comms-chan:hover{border-color:var(--aor1);color:var(--txt);}
-  .comms-chan.on{background:linear-gradient(180deg,var(--aor1),var(--aor1b));color:#1a1605;border-color:var(--aor1b);font-weight:700;}
-  .comms-chan .cc-hash{opacity:.6;margin-right:3px;}
-  .comms-newchan{flex:0 0 auto;background:var(--surface);border:1px dashed var(--line2);border-radius:9px;
-    color:var(--aor1);font-family:var(--mono);font-size:12px;padding:8px 12px;cursor:pointer;white-space:nowrap;transition:.15s;}
-  .comms-newchan:hover{border-color:var(--aor1);background:var(--surface2);}
+  /* MOBILE : une seule colonne à la fois (liste OU conversation) */
+  @media(max-width:760px){
+    .tchat{height:78vh;gap:0;}
+    .tchat-side{flex:1 1 100%;width:100%;}
+    .tchat-main{display:none;flex:1 1 100%;width:100%;}
+    .tchat.conv-open .tchat-side{display:none;}
+    .tchat.conv-open .tchat-main{display:flex;}
+    .tchat-back{display:block;}
+  }
   /* ===== Arborescence Direction (style SharePoint / M365) ===== */
   .sp-layout{display:flex;gap:14px;align-items:flex-start;}
   .sp-tree{flex:0 0 230px;background:var(--surface);border:1px solid var(--line2);border-radius:12px;padding:10px;}
@@ -902,7 +928,7 @@
     <div class="pwd-wrap">
       <input type="password" id="login-pwd" placeholder="&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;" autocomplete="current-password"
         onkeydown="if(event.key==='Enter')tryLogin();">
-      <button type="button" class="pwd-eye" id="pwd-eye" onclick="togglePwd()" title="Afficher / masquer">&#128065;</button>
+      <button type="button" class="pwd-eye" id="pwd-eye" onclick="togglePwd()" title="Afficher / masquer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 12S5 5 12 5s10.5 7 10.5 7-3.5 7-10.5 7S1.5 12 1.5 12z"/><circle cx="12" cy="12" r="3"/></svg></button>
     </div>
     <button class="login-btn" onclick="tryLogin()">&#9654; Acc&eacute;der</button>
     <p id="login-err"></p>
@@ -1244,6 +1270,8 @@
       <input type="color" id="map-color" value="#ffd24a" title="Couleur du tracé / ping">
       <button class="mtool ok" onclick="finishMapShape()" id="map-finish" title="Valider le tracé" style="display:none">&#10003; Valider</button>
       <button class="mtool" onclick="cancelMapShape()" id="map-cancel" title="Annuler le tracé en cours" style="display:none">&#10005;</button>
+      <span class="map-sep"></span>
+      <button class="mtool undo" onclick="mapUndo()" id="map-undo-main" title="Annuler la dernière action" style="display:none">&#8634; Annuler</button>
     </div>
     <div class="map-hint2">Chemin à pied : <b>maintiens le clic</b> et dessine. Zone / règle : <b>clic gauche</b> = poser, <b>clic droit</b> = valider.</div>
 
@@ -1306,20 +1334,32 @@
   <!-- ===== COMMS (chat temps réel) ===== -->
   <div class="view" id="view-comms">
     <div class="view-head flex items-center justify-between rounded-xl border border-line2 bg-surface/70 px-5 py-4 mb-4 shadow-tac">
-      <div><h2 class="text-tan tracking-widest">Comms</h2><p class="view-sub">// Liaison radio texte &mdash; temps r&eacute;el</p></div>
+      <div><h2 class="text-tan tracking-widest">Comms</h2><p class="view-sub">// Liaison texte &mdash; temps r&eacute;el</p></div>
       <span id="comms-status" class="font-mono text-[10px] tracking-widest text-dim uppercase">// LINK</span>
     </div>
-    <div class="comms-channels">
-      <div id="comms-chan-list" class="comms-chan-list"></div>
-      <button class="comms-newchan" onclick="newCommsChannel()" title="Nouveau canal">&#43; Canal</button>
-    </div>
-    <div class="comms-wrap">
-      <div id="comms-log" class="comms-log"></div>
-      <div class="comms-bar">
-        <input type="text" id="comms-call" placeholder="Indicatif" maxlength="16">
-        <input type="text" id="comms-input" placeholder="Message&hellip;" maxlength="280"
-          onkeydown="if(event.key==='Enter')sendComms();">
-        <button class="comms-send" onclick="sendComms()">&#9658;</button>
+    <div class="tchat">
+      <!-- COLONNE GAUCHE : liste des conversations -->
+      <div class="tchat-side" id="tchat-side">
+        <div class="tchat-side-top">
+          <input type="text" id="tchat-search" placeholder="Rechercher&hellip;" oninput="renderConvList()">
+          <button class="tchat-new" onclick="newCommsChannel()" title="Nouvelle conversation">&#43;</button>
+        </div>
+        <div class="tchat-list" id="tchat-list"></div>
+      </div>
+      <!-- COLONNE DROITE : conversation ouverte -->
+      <div class="tchat-main" id="tchat-main">
+        <div class="tchat-conv-head" id="tchat-conv-head">
+          <button class="tchat-back" onclick="closeConv()" title="Retour">&#8592;</button>
+          <span class="tchat-conv-name" id="tchat-conv-name">Sélectionne une conversation</span>
+          <button class="tchat-del-conv" id="tchat-del-conv" onclick="deleteConv()" title="Supprimer la conversation (Admin)" style="display:none">&#128465;</button>
+        </div>
+        <div id="comms-log" class="comms-log"></div>
+        <div class="comms-bar">
+          <input type="text" id="comms-call" placeholder="Indicatif" maxlength="16">
+          <input type="text" id="comms-input" placeholder="Message&hellip;" maxlength="280"
+            onkeydown="if(event.key==='Enter')sendComms();">
+          <button class="comms-send" onclick="sendComms()">&#9658;</button>
+        </div>
       </div>
     </div>
   </div>
@@ -2567,13 +2607,23 @@ function loadMapWorld(){
   mapWorld={pings:d.pings||[],shapes:d.shapes||[],stickers:d.stickers||[],bsCount:d.bsCount||0};
 }
 var mapWorldLocalTs=0;   /* dernière modif locale du calque carte */
+var _mapUndoSnapshot=null;   /* état AVANT la modif en cours */
+var _mapIsUndoing=false;
 function saveMapWorld(){
   if(!canWrite())return;
+  /* empile l'état précédent pour le bouton Annuler (sauf si c'est un undo en cours) */
+  if(!_mapIsUndoing && _mapUndoSnapshot){
+    mapUndoStack.push(_mapUndoSnapshot);
+    if(mapUndoStack.length>30)mapUndoStack.shift();
+    var ub=document.getElementById('map-undo-main');if(ub)ub.style.display=mapUndoStack.length?'':'none';
+    var ub2=document.getElementById('map-undo-btn');if(ub2)ub2.style.display=mapUndoStack.length?'':'none';
+  }
   mapWorldLocalTs=Date.now();
   var payload={pings:mapWorld.pings,shapes:mapWorld.shapes,stickers:mapWorld.stickers||[],bsCount:mapWorld.bsCount||0};
+  /* mémorise ce nouvel état comme "précédent" pour la prochaine modif */
+  _mapUndoSnapshot=JSON.stringify(payload);
   db[MAP_WORLD_KEY]={type:'mapdata',data:payload};
   cacheLocal();
-  /* envoi direct au cloud (ne dépend pas de db ni du timing de cloudRefresh) */
   if(sb){
     sb.from('entries').upsert({id:MAP_WORLD_KEY,type:'mapdata',data:payload,updated_at:new Date().toISOString()}).then(function(r){
       if(r&&r.error){collabStatus('// ECHEC CARTE : '+(r.error.message||r.error));}
@@ -3034,26 +3084,30 @@ var mapLegendOpen={};
 function toggleLegendFolder(k){mapLegendOpen[k]=(mapLegendOpen[k]===false);renderMapLegend();}
 var mapUndoStack=[];
 function pushMapUndo(){
-  try{
-    mapUndoStack.push(JSON.stringify({pings:mapWorld.pings,shapes:mapWorld.shapes,stickers:mapWorld.stickers||[],bsCount:mapWorld.bsCount||0}));
-    if(mapUndoStack.length>25)mapUndoStack.shift();
-    var btn=document.getElementById('map-undo-btn');if(btn)btn.style.display=mapUndoStack.length?'':'none';
-  }catch(e){}
+  /* conservé pour compat : on s'appuie surtout sur le snapshot auto de saveMapWorld */
 }
 function mapUndo(){
-  if(!mapUndoStack.length)return;
+  if(!mapUndoStack.length){
+    var ub=document.getElementById('map-undo-main');if(ub)ub.style.display='none';
+    var ub2=document.getElementById('map-undo-btn');if(ub2)ub2.style.display='none';
+    return;
+  }
   try{
     var prev=JSON.parse(mapUndoStack.pop());
     mapWorld.pings=prev.pings||[];mapWorld.shapes=prev.shapes||[];
     mapWorld.stickers=prev.stickers||[];mapWorld.bsCount=prev.bsCount||0;
-    saveMapWorld();redrawMap();renderMapLegend();
-    var btn=document.getElementById('map-undo-btn');if(btn)btn.style.display=mapUndoStack.length?'':'none';
-  }catch(e){}
+    _mapIsUndoing=true;                 /* empêche de ré-empiler pendant l'undo */
+    _mapUndoSnapshot=JSON.stringify(prev);
+    saveMapWorld();
+    _mapIsUndoing=false;
+    redrawMap();renderMapLegend();
+    var b1=document.getElementById('map-undo-main');if(b1)b1.style.display=mapUndoStack.length?'':'none';
+    var b2=document.getElementById('map-undo-btn');if(b2)b2.style.display=mapUndoStack.length?'':'none';
+  }catch(e){_mapIsUndoing=false;}
 }
 function legendDelFolder(k){
   var nm=opName(k);
   if(!confirm('Effacer tout le dossier « '+nm+' » ?\n\nCette action peut être annulée avec le bouton Annuler (↶).'))return;
-  pushMapUndo();
   mapWorld.pings=mapWorld.pings.filter(function(x){return elemOp(x)!==k;});
   mapWorld.shapes=mapWorld.shapes.filter(function(x){return elemOp(x)!==k;});
   mapWorld.stickers=(mapWorld.stickers||[]).filter(function(x){return elemOp(x)!==k;});
@@ -3743,40 +3797,80 @@ function showPdfWait(on){
   }
   el.style.display=on?'flex':'none';
 }
-/* ============ COMMS — chat multi-canaux temps réel (style Teams) ============ */
-var commsChannel=null,commsPoll=null,commsCurChan='general';
+/* ============ COMMS — chat vertical type Teams/WhatsApp ============ */
+var commsRtChannel=null,commsPoll=null,commsCurChan=null,_commsLastSig='';
+var _commsLastMsgByChan={};   /* dernier message par canal (aperçu liste) */
 function commsChannels(){
-  /* canaux = Général + ceux créés manuellement (stockés dans entries) + un par opération */
   var list=[{id:'general',name:'Général'}];
   try{
     var custom=(db['__commschans__']&&db['__commschans__'].data&&db['__commschans__'].data.list)||[];
     custom.forEach(function(c){list.push({id:c.id,name:c.name});});
   }catch(e){}
-  /* opérations -> canal dédié */
   try{operationsOf().forEach(function(o){if(o.name)list.push({id:'op_'+o._id,name:o.name});});}catch(e){}
-  /* dédoublonnage */
   var seen={},out=[];list.forEach(function(c){if(!seen[c.id]){seen[c.id]=1;out.push(c);}});
   return out;
 }
-function renderCommsChannels(){
-  var box=document.getElementById('comms-chan-list');if(!box)return;
+function convOrder(){try{return JSON.parse(localStorage.getItem('bs_conv_order')||'[]');}catch(e){return[];}}
+function saveConvOrder(ids){try{localStorage.setItem('bs_conv_order',JSON.stringify(ids));}catch(e){}}
+function renderConvList(){
+  var box=document.getElementById('tchat-list');if(!box)return;
   var chans=commsChannels();
-  if(!chans.some(function(c){return c.id===commsCurChan;}))commsCurChan='general';
-  box.innerHTML=chans.map(function(c){
-    return '<button class="comms-chan'+(c.id===commsCurChan?' on':'')+'" onclick="switchCommsChan(\''+c.id+'\')">'+
-      '<span class="cc-hash">#</span>'+esc(c.name)+'</button>';
+  var q=(document.getElementById('tchat-search')||{}).value;q=(q||'').toLowerCase();
+  var order=convOrder();
+  if(order.length)chans.sort(function(a,b){var ia=order.indexOf(a.id),ib=order.indexOf(b.id);return (ia<0?999:ia)-(ib<0?999:ib);});
+  box.innerHTML=chans.filter(function(c){return !q||c.name.toLowerCase().indexOf(q)>=0;}).map(function(c){
+    var initials=c.name.replace(/[^a-zA-ZÀ-ÿ0-9 ]/g,'').split(' ').filter(Boolean).slice(0,2).map(function(w){return w[0];}).join('')||'#';
+    var last=_commsLastMsgByChan[c.id]||'';
+    return '<div class="tconv'+(c.id===commsCurChan?' on':'')+'" data-cid="'+c.id+'" onclick="openConv(\''+c.id+'\')">'+
+      '<span class="tchat-drag" draggable="true">&#10021;</span>'+
+      '<span class="tconv-av">'+esc(initials)+'</span>'+
+      '<span class="tconv-mid"><span class="tconv-name">'+esc(c.name)+'</span>'+
+      (last?'<span class="tconv-last">'+esc(last)+'</span>':'<span class="tconv-last">—</span>')+'</span></div>';
   }).join('');
+  wireConvDrag();
 }
-function switchCommsChan(id){commsCurChan=id;_commsLastSig='';renderCommsChannels();loadComms();}
+function openConv(id){
+  commsCurChan=id;_commsLastSig='';
+  var chans=commsChannels();var c=chans.filter(function(x){return x.id===id;})[0];
+  var nm=document.getElementById('tchat-conv-name');if(nm)nm.textContent=c?c.name:'Conversation';
+  document.querySelector('.tchat').classList.add('conv-open');
+  /* bouton suppression conversation : admin seulement, et pas le canal Général */
+  var delc=document.getElementById('tchat-del-conv');
+  if(delc)delc.style.display=((typeof canAdmin==='function'&&canAdmin())&&id!=='general')?'':'none';
+  renderConvList();loadComms();
+  setTimeout(function(){var inp=document.getElementById('comms-input');if(inp&&window.innerWidth>760)inp.focus();},50);
+}
+function closeConv(){document.querySelector('.tchat').classList.remove('conv-open');}
 function newCommsChannel(){
-  var name=prompt('Nom du nouveau canal (sujet, mission, équipe...) :');
+  var name=prompt('Nom de la nouvelle conversation (mission, sujet, équipe...) :');
   if(!name||!name.trim())return;name=name.trim();
   var id='c_'+Date.now().toString(36);
   var cur=(db['__commschans__']&&db['__commschans__'].data&&db['__commschans__'].data.list)||[];
   cur.push({id:id,name:name});
   db['__commschans__']={type:'commschans',data:{list:cur}};
   cacheLocal();if(sb)cloudSave('__commschans__');
-  commsCurChan=id;renderCommsChannels();loadComms();
+  openConv(id);
+}
+function deleteConv(){
+  if(!(typeof canAdmin==='function'&&canAdmin()))return;
+  if(!commsCurChan||commsCurChan==='general')return;
+  var chans=commsChannels();var c=chans.filter(function(x){return x.id===commsCurChan;})[0];
+  if(!confirm('Supprimer la conversation « '+(c?c.name:'')+' » et tous ses messages ?\nAction réservée Admin, irréversible.'))return;
+  /* supprime les messages du canal */
+  if(sb)sb.from('messages').delete().eq('channel',commsCurChan).then(function(){},function(){});
+  /* retire le canal de la liste s'il est custom (pas une op) */
+  if(commsCurChan.indexOf('c_')===0){
+    var cur=(db['__commschans__']&&db['__commschans__'].data&&db['__commschans__'].data.list)||[];
+    cur=cur.filter(function(x){return x.id!==commsCurChan;});
+    db['__commschans__']={type:'commschans',data:{list:cur}};cacheLocal();if(sb)cloudSave('__commschans__');
+  }
+  commsCurChan='general';closeConv();renderConvList();
+}
+function deleteMsg(id){
+  if(!(typeof canAdmin==='function'&&canAdmin()))return;
+  if(!id)return;
+  if(!confirm('Supprimer ce message ? (Admin)'))return;
+  if(sb)sb.from('messages').delete().eq('id',id).then(function(){loadComms();},function(){});
 }
 function commsMyCall(){
   var el=document.getElementById('comms-call');
@@ -3787,34 +3881,36 @@ function commsMyCall(){
 function enterComms(){
   var el=document.getElementById('comms-call');
   if(el&&!el.value){try{el.value=localStorage.getItem('bs_comms_call')||(typeof gpsMyPseudo!=='undefined'?gpsMyPseudo:'')||'';}catch(e){}}
-  renderCommsChannels();
-  loadComms();
+  renderConvList();
   subscribeComms();
+  /* sur PC, ouvre Général par défaut ; sur mobile, laisse la liste visible */
+  if(!commsCurChan){if(window.innerWidth>760)openConv('general');else commsCurChan='general';}
 }
 function loadComms(){
-  if(!sb){renderComms([]);return;}
-  sb.from('messages').select('*').eq('channel',commsCurChan).order('created_at',{ascending:true}).limit(200).then(function(r){
-    if(r&&r.data){renderComms(r.data);}
-    else if(r&&r.error){
-      /* si la colonne channel n'existe pas encore, on recharge sans filtre */
-      sb.from('messages').select('*').order('created_at',{ascending:true}).limit(200).then(function(r2){if(r2&&r2.data)renderComms(r2.data);});
+  if(!sb||!commsCurChan){renderComms([]);return;}
+  sb.from('messages').select('*').eq('channel',commsCurChan).order('created_at',{ascending:true}).limit(300).then(function(r){
+    if(r&&r.data){
+      if(r.data.length){var lm=r.data[r.data.length-1];_commsLastMsgByChan[commsCurChan]=(lm.callsign?lm.callsign+': ':'')+lm.body;}
+      renderComms(r.data);
+    }else if(r&&r.error){
+      sb.from('messages').select('*').order('created_at',{ascending:true}).limit(300).then(function(r2){if(r2&&r2.data)renderComms(r2.data);});
     }
   });
 }
-var _commsLastSig='';
 function renderComms(rows){
   var box=document.getElementById('comms-log');if(!box)return;
   var me=commsMyCall();
-  /* signature du contenu : on ne re-render que si ça a changé (évite le clignotement) */
-  var sig=rows.map(function(m){return (m.id||m.created_at)+'|'+m.callsign+'|'+m.body;}).join('~')+'#'+me;
+  var isAdmin=(typeof canAdmin==='function'&&canAdmin());
+  var sig=rows.map(function(m){return (m.id||m.created_at)+'|'+m.callsign+'|'+m.body;}).join('~')+'#'+me+'#'+(isAdmin?1:0);
   if(sig===_commsLastSig)return;
   _commsLastSig=sig;
-  if(!rows.length){box.innerHTML='<div class="comms-empty">// CANAL VIDE — OUVRE LA LIAISON</div>';return;}
+  if(!rows.length){box.innerHTML='<div class="comms-empty">// CONVERSATION VIDE</div>';return;}
   var atBottom=(box.scrollHeight-box.scrollTop-box.clientHeight)<60;
   box.innerHTML=rows.map(function(m){
     var mine=(m.callsign&&me&&m.callsign.toUpperCase()===me.toUpperCase());
     var t='';try{var d=new Date(m.created_at);t=('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);}catch(e){}
-    return '<div class="comms-msg'+(mine?' mine':'')+'" data-mid="'+(m.id||'')+'"><div class="who">'+esc(m.callsign||'?')+'</div>'+esc(m.body||'')+'<div class="when">'+t+'</div></div>';
+    var del=(isAdmin&&m.id)?'<button class="msg-del" onclick="deleteMsg('+m.id+')" title="Supprimer (Admin)">&times;</button>':'';
+    return '<div class="comms-msg'+(mine?' mine':'')+'">'+del+'<div class="who">'+esc(m.callsign||'?')+'</div>'+esc(m.body||'')+'<div class="when">'+t+'</div></div>';
   }).join('');
   if(atBottom)box.scrollTop=box.scrollHeight;
 }
@@ -3822,31 +3918,46 @@ function sendComms(){
   var call=commsMyCall();var inp=document.getElementById('comms-input');
   var body=inp?inp.value.trim():'';
   if(!call){alert('Entre ton indicatif avant d\'émettre.');return;}
-  if(!body)return;
+  if(!body||!commsCurChan)return;
   try{localStorage.setItem('bs_comms_call',call);}catch(e){}
-  if(!sb){return;}
+  if(!sb)return;
   inp.value='';
   sb.from('messages').insert({callsign:call,body:body,channel:commsCurChan,created_at:new Date().toISOString()}).then(function(r){
-    if(r&&r.error){
-      /* fallback si colonne channel absente */
-      sb.from('messages').insert({callsign:call,body:body,created_at:new Date().toISOString()}).then(function(){loadComms();});
-    }else{loadComms();}
+    if(r&&r.error){sb.from('messages').insert({callsign:call,body:body,created_at:new Date().toISOString()}).then(function(){loadComms();});}
+    else{loadComms();}
   });
 }
 function subscribeComms(){
   if(!sb)return;
-  if(!commsChannel){
-    try{
-      commsChannel=sb.channel('comms-live')
-        .on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},function(){loadComms();})
-        .subscribe();
-    }catch(e){}
+  if(!commsRtChannel){
+    try{commsRtChannel=sb.channel('comms-live')
+      .on('postgres_changes',{event:'*',schema:'public',table:'messages'},function(){loadComms();})
+      .subscribe();}catch(e){}
   }
   if(!commsPoll)commsPoll=setInterval(function(){
-    var v=document.getElementById('view-comms');
-    if(v&&v.classList.contains('active'))loadComms();
-  },6000);
+    var v=document.getElementById('view-comms');if(v&&v.classList.contains('active'))loadComms();
+  },7000);
   var st=document.getElementById('comms-status');if(st)st.textContent='// LINK ✓';
+}
+/* drag des conversations (réordonner) */
+function wireConvDrag(){
+  var list=document.getElementById('tchat-list');if(!list)return;
+  var items=list.querySelectorAll('.tconv');var dragEl=null;
+  items.forEach(function(it){
+    var h=it.querySelector('.tchat-drag');if(!h)return;
+    h.addEventListener('dragstart',function(e){dragEl=it;e.dataTransfer.effectAllowed='move';});
+    h.addEventListener('dragend',function(){dragEl=null;persistConvOrder();});
+  });
+  list.addEventListener('dragover',function(e){
+    e.preventDefault();if(!dragEl)return;
+    var after=null,els=[].slice.call(list.querySelectorAll('.tconv:not(.dragging)'));
+    for(var i=0;i<els.length;i++){var b=els[i].getBoundingClientRect();if(e.clientY<b.top+b.height/2){after=els[i];break;}}
+    if(after==null)list.appendChild(dragEl);else list.insertBefore(dragEl,after);
+  });
+  function persistConvOrder(){
+    var ids=[].slice.call(list.querySelectorAll('.tconv')).map(function(x){return x.getAttribute('data-cid');});
+    saveConvOrder(ids);
+  }
 }
 
 /* ============ PWA : manifest + icône générés depuis le logo (mono-fichier) ============ */
