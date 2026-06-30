@@ -47,7 +47,8 @@
   .mono{font-family:var(--mono);}
 
   /* ===== LOGIN ===== */
-  #login-screen{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;overflow:hidden;    background:radial-gradient(circle at 50% 38%,#11160d 0%,#0a0d08 55%,#070906 100%);}
+  #login-screen{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;overflow:hidden;
+    background:radial-gradient(circle at 50% 38%,#11160d 0%,#0a0d08 55%,#070906 100%);}
   /* grille tactique discrète en fond */
   #login-screen:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
     background-image:linear-gradient(rgba(124,145,82,.06) 1px,transparent 1px),
@@ -56,6 +57,7 @@
     mask-image:radial-gradient(circle at 50% 42%,#000 30%,transparent 78%);
     -webkit-mask-image:radial-gradient(circle at 50% 42%,#000 30%,transparent 78%);}
   /* ---- Radar tactique en fond ---- */
+  /* ---- scène 3D login ---- */
   #bg3d{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;opacity:0;transition:opacity 1.2s ease;}
   #bg3d.on{opacity:1;}
   #login-screen .login-card{position:relative;z-index:5;backdrop-filter:blur(3px);background:rgba(13,16,9,.55);}
@@ -528,6 +530,42 @@
   @keyframes subSlide{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:none;}}
   .ksubadd input{width:100%;font-size:12px;padding:7px 9px;}
   .ksubwrap .kititem.sub{margin:0;background:rgba(0,0,0,.18);}
+
+  /* ===== FICHE ÉVALUATION BULL ===== */
+  .eval-sheet{display:flex;flex-direction:column;gap:14px;}
+  .eval-block,.eval-phase{background:var(--surface);border:1px solid var(--line2);border-radius:var(--r-lg);padding:16px;}
+  .eval-phase{border-left:4px solid var(--line2);}
+  .eval-phase.p1{border-left-color:#2e9e54;}
+  .eval-phase.p2{border-left-color:#d9a400;}
+  .eval-phase.p3{border-left-color:#c0392b;}
+  .eval-phase.final{border-left-color:var(--aor1);background:linear-gradient(160deg,rgba(184,160,106,.08),var(--surface));}
+  .eval-ph-hd{font-family:var(--mono);font-size:13px;font-weight:800;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;display:flex;align-items:center;gap:9px;}
+  .eval-phase.p1 .eval-ph-hd{color:#3fbf6c;}
+  .eval-phase.p2 .eval-ph-hd{color:#e8c04a;}
+  .eval-phase.p3 .eval-ph-hd{color:#e06557;}
+  .eval-phase.final .eval-ph-hd{color:var(--aor1b);}
+  .eval-ph-hd .dot{width:11px;height:11px;border-radius:50%;background:currentColor;box-shadow:0 0 8px currentColor;}
+  .eval-ph-obj{font-style:italic;color:var(--muted);font-size:12px;margin-bottom:12px;}
+  .eval-sub-hd{font-family:var(--mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--aor1);margin:14px 0 8px;padding-top:8px;border-top:1px dashed var(--line2);}
+  .eval-grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  @media(max-width:620px){.eval-grid2{grid-template-columns:1fr;}}
+  .eval-tbl{width:100%;border-collapse:collapse;margin-top:6px;}
+  .eval-tbl th,.eval-tbl td{border:1px solid var(--line2);padding:8px 9px;text-align:left;font-size:12.5px;vertical-align:middle;}
+  .eval-tbl th{background:var(--surface2);font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--aor1);}
+  .eval-tbl td.et{font-weight:700;font-family:var(--mono);font-size:11.5px;white-space:nowrap;}
+  .eval-tbl td.c{text-align:center;}
+  .eval-tbl input[type=checkbox]{width:20px;height:20px;accent-color:var(--aor2);cursor:pointer;}
+  .eval-tbl input[type=date]{width:100%;padding:5px 7px;font-size:11.5px;}
+  .eval-chk{display:flex;align-items:center;gap:9px;margin-top:12px;font-size:13px;cursor:pointer;}
+  .eval-chk input{width:20px;height:20px;accent-color:var(--aor2);}
+  .eval-radio{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin:10px 0;font-size:13px;}
+  .eval-radio>span{font-family:var(--mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);}
+  .eval-radio label{display:flex;align-items:center;gap:6px;cursor:pointer;}
+  .eval-radio input{width:18px;height:18px;accent-color:var(--aor1);}
+  .eval-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;position:sticky;bottom:0;background:var(--bg);padding:14px 0;border-top:1px solid var(--line2);}
+  .eval-status{font-family:var(--mono);font-size:11px;color:var(--amber);flex:1;letter-spacing:1px;}
+  .eval-del{background:rgba(192,57,43,.15);border:1px solid #c0392b;color:#e06557;border-radius:var(--r);padding:9px 14px;font-size:13px;font-weight:700;cursor:pointer;}
+  .eval-del:hover{background:rgba(192,57,43,.3);}
 
   /* replique blocks */
   /* progression drills dans la fiche membre */
@@ -1173,7 +1211,7 @@
   <div class="hud-corner tl"></div><div class="hud-corner tr"></div>
   <div class="hud-corner bl"></div><div class="hud-corner br"></div>
   <canvas id="bg3d"></canvas>
-  <div class="hud-line top"><span>// BROWN SQUADRON</span><span class="blink">SYS ONLINE · 3D</span></div>
+  <div class="hud-line top"><span>// BROWN SQUADRON</span><span class="blink">SYS ONLINE</span></div>
   <div class="hud-line bottom"><span id="hud-clock">--:--:--</span><span>SECURE CHANNEL</span></div>
 
   <div class="login-card">
@@ -1217,6 +1255,7 @@
     <button data-view="view-map" onclick="switchTab(this)"><span class="ico">&#9737;</span><span class="lbl">Map</span></button>
     <button data-view="view-comms" onclick="switchTab(this)"><span class="ico">&#9993;</span><span class="lbl">Comms</span></button>
     <button data-view="view-direction" data-admin="1" onclick="switchTab(this)"><span class="ico">&#9707;</span><span class="lbl">Direction</span></button>
+    <button data-view="view-eval" data-admin="1" onclick="switchTab(this)"><span class="ico">&#9873;</span><span class="lbl">&Eacute;val. Bull</span></button>
   </div>
 
   <div class="collab" id="collab-status"></div>
@@ -1669,9 +1708,99 @@
     </div>
   </div>
 
-</div>
+  <!-- ===== ÉVALUATION BULL (pages 25-26-27 du Brown Book) — ADMIN ===== -->
+  <div class="view" id="view-eval">
+    <div class="view-head flex items-center justify-between rounded-xl border border-line2 bg-surface/70 px-5 py-4 mb-4 shadow-tac">
+      <div><h2 class="text-tan tracking-widest">Fiche d'&eacute;valuation</h2><p class="view-sub">// Protocole &laquo; Bull &raquo; &mdash; pages 25-26-27</p></div>
+      <div style="display:flex;gap:8px">
+        <select id="eval-select" onchange="loadEval(this.value)" style="min-width:150px"></select>
+        <button class="add-btn" onclick="newEval()"><span class="plus">+</span> Nouvelle</button>
+      </div>
+    </div>
 
-<!-- popup annotation ping -->
+    <div class="eval-sheet" id="eval-sheet">
+      <!-- En-tête -->
+      <div class="eval-block">
+        <div class="eval-grid2">
+          <div class="field"><label>Identit&eacute; du Candidat</label><input id="ev_candidat" oninput="markEvalDirty()"></div>
+          <div class="field"><label>R&eacute;f&eacute;rent &Eacute;valuateur</label><input id="ev_referent" oninput="markEvalDirty()"></div>
+          <div class="field"><label>Date d'entr&eacute;e en s&eacute;lection</label><input type="date" id="ev_date_entree" oninput="markEvalDirty()"></div>
+        </div>
+      </div>
+
+      <!-- PHASE 1 -->
+      <div class="eval-phase p1">
+        <div class="eval-ph-hd"><span class="dot"></span>PHASE 1 : PROSPECT (&laquo; Prosp&eacute; &raquo;)</div>
+        <div class="eval-ph-obj">Objectif : Curiosit&eacute;, recherche et motivation initiale.</div>
+        <table class="eval-tbl" id="ev_p1_tbl"></table>
+        <div class="eval-sub-hd">&#9873; S&eacute;lection Interm&eacute;diaire</div>
+        <div class="eval-grid2">
+          <div class="field"><label>&Eacute;preuve : Marche 10 km &mdash; Performance</label>
+            <select id="ev_p1_perf" oninput="markEvalDirty()"><option value="">—</option><option value="A">A — Excellent</option><option value="B">B — Satisfaisant</option><option value="C">C — Insuffisant</option></select></div>
+          <div class="field"><label>Sp&eacute;cialit&eacute; attribu&eacute;e</label><input id="ev_p1_spe" oninput="markEvalDirty()"></div>
+        </div>
+        <label class="eval-chk"><input type="checkbox" id="ev_p1_green" onchange="markEvalDirty()"> Acc&egrave;s Groupe Green : Valid&eacute;</label>
+      </div>
+
+      <!-- PHASE 2 -->
+      <div class="eval-phase p2">
+        <div class="eval-ph-hd"><span class="dot"></span>PHASE 2 : RECRUE</div>
+        <div class="eval-ph-obj">Objectif : Technique et coh&eacute;sion (D&eacute;lai : 6 mois).</div>
+        <table class="eval-tbl" id="ev_p2_tbl"></table>
+        <div class="eval-sub-hd">&#9873; S&eacute;lection Confirmation</div>
+        <div class="eval-grid2">
+          <div class="field"><label>&Eacute;preuve : Marche 15 km &mdash; &Eacute;tat physique &agrave; l'arriv&eacute;e</label><input id="ev_p2_etat" oninput="markEvalDirty()"></div>
+        </div>
+        <label class="eval-chk"><input type="checkbox" id="ev_p2_conf" onchange="markEvalDirty()"> Passage au statut Confirm&eacute; : Valid&eacute;</label>
+      </div>
+
+      <!-- PHASE 3 -->
+      <div class="eval-phase p3">
+        <div class="eval-ph-hd"><span class="dot"></span>PHASE 3 : CONFIRM&Eacute;</div>
+        <div class="eval-ph-obj">Objectif : R&eacute;silience et investissement mat&eacute;riel.</div>
+        <table class="eval-tbl" id="ev_p3_tbl"></table>
+      </div>
+
+      <!-- ADMISSION FINALE -->
+      <div class="eval-phase final">
+        <div class="eval-ph-hd"><span class="dot"></span>&#127942; ADMISSION FINALE : STATUT &laquo; BULL &raquo;</div>
+        <div class="eval-sub-hd">D&eacute;cision du coll&egrave;ge des membres</div>
+        <div class="eval-grid2">
+          <div class="field"><label>Validation Physique (20 km) &mdash; Temps</label><input id="ev_f_temps" oninput="markEvalDirty()"></div>
+          <div class="field"><label>&Eacute;tat d'esprit</label><input id="ev_f_esprit" oninput="markEvalDirty()"></div>
+        </div>
+        <div class="eval-radio">
+          <span>R&eacute;sultat (20 km) :</span>
+          <label><input type="radio" name="ev_f_phys" value="OK" onchange="markEvalDirty()"> OK</label>
+          <label><input type="radio" name="ev_f_phys" value="KO" onchange="markEvalDirty()"> KO</label>
+        </div>
+        <div class="eval-radio">
+          <span>Validation Sociale &mdash; Unanimit&eacute; :</span>
+          <label><input type="radio" name="ev_f_unan" value="Oui" onchange="markEvalDirty()"> Oui</label>
+          <label><input type="radio" name="ev_f_unan" value="Non" onchange="markEvalDirty()"> Non</label>
+        </div>
+        <div class="field"><label>Commentaire (vote)</label><input id="ev_f_comment" oninput="markEvalDirty()"></div>
+        <div class="eval-sub-hd">&#128221; Conclusion de l'&eacute;valuateur</div>
+        <div class="eval-radio">
+          <span>D&eacute;cision :</span>
+          <label><input type="radio" name="ev_f_dec" value="ADMIS" onchange="markEvalDirty()"> ADMIS (Remise du Patch)</label>
+          <label><input type="radio" name="ev_f_dec" value="AJOURNE" onchange="markEvalDirty()"> AJOURN&Eacute;</label>
+        </div>
+        <div class="field"><label>Motifs si ajourn&eacute;</label><textarea id="ev_f_motifs" oninput="markEvalDirty()"></textarea></div>
+        <div class="eval-grid2">
+          <div class="field"><label>Signature de l'&Eacute;valuateur</label><input id="ev_f_sign" oninput="markEvalDirty()"></div>
+          <div class="field"><label>Date de cl&ocirc;ture</label><input type="date" id="ev_f_cloture" oninput="markEvalDirty()"></div>
+        </div>
+      </div>
+
+      <div class="eval-actions">
+        <span id="eval-status" class="eval-status"></span>
+        <button class="ghost" onclick="saveEval()">&#128190; Enregistrer</button>
+        <button class="add-btn" onclick="genEvalPdf()">&#128196; G&eacute;n&eacute;rer le PDF</button>
+        <button class="eval-del" onclick="delEval()">&#128465; Supprimer</button>
+      </div>
+    </div>
+  </div>
 <div class="ev-pop" id="ping-pop" onclick="if(event.target===this)closePingPop()">
   <div class="ev-box" id="ping-box" style="width:360px"></div>
 </div>
@@ -1753,7 +1882,12 @@ var KIT_AOR2_DEF=[
 var KIT_AOR1_DEF=[
   {name:'Combat Shirt AOR1 Navy Custom (Gen2)'},
   {name:'Combat Pant AOR1 Navy Custom (Gen2)'},
-  {name:'Plate Carrier / Chest + Slick ou PACA ou Chicken'},
+  {name:'Plate Carrier / Chest + Slick ou PACA ou Chicken',sub:[
+    {name:'Chargeurs',qty:7},
+    {name:'Grenade M67',qty:2},
+    {name:'Flashbang',qty:2},
+    {name:'Fumigène',qty:2}
+  ]},
   {name:'Rigger Belt (OD / SAND / BLACK / AOR1)'},
   {name:'Casque MARITIME type "OpsCore" AOR1'},
   {name:'Shroud L4G24 Silver ou L4G19 Gold'},
@@ -1767,8 +1901,20 @@ var KIT_ANNEXE_DEF=[
   {name:'Beyond Cold Fusion AOR1 - AOR2'},
   {name:'Patagonia lvl 3 / 3a / 5 AOR1 ou AOR2'},
   {name:'Arcteryx Minotaur Half Shell'},
-  {name:'Sac BTAP AOR1 / AOR2'},
-  {name:'LBT 2595G Backpack'},
+  {name:'Sac BTAP AOR1 / AOR2',sub:[
+    {name:'Chargeurs',qty:4},
+    {name:'Grenade M67',qty:2},
+    {name:'Flashbang',qty:2},
+    {name:'Fumigène',qty:2},
+    {name:'Nourriture',qty:1}
+  ]},
+  {name:'LBT 2595G Backpack',sub:[
+    {name:'Chargeurs',qty:4},
+    {name:'Grenade M67',qty:2},
+    {name:'Flashbang',qty:2},
+    {name:'Fumigène',qty:2},
+    {name:'Nourriture',qty:1}
+  ]},
   {name:'Handwarmer AOR1 / AOR2'}
 ];
 /* clé cloud du modèle global de kit */
@@ -1777,7 +1923,7 @@ var KIT_DOC_KEY='__kitlist__';
 function defaultKitModel(){
   return {aor2:KIT_AOR2_DEF.map(cloneItem),aor1:KIT_AOR1_DEF.map(cloneItem),annexe:KIT_ANNEXE_DEF.map(cloneItem)};
 }
-function cloneItem(k){return {name:k.name};}
+function cloneItem(k){return {name:k.name,sub:k.sub?k.sub.map(function(s){return {name:s.name,qty:s.qty||1};}):undefined};}
 function kitModel(){
   var d=db[KIT_DOC_KEY];
   if(d&&d.aor2&&d.aor1&&d.annexe)return {aor2:d.aor2.slice(),aor1:d.aor1.slice(),annexe:d.annexe.slice()};
@@ -1905,8 +2051,9 @@ function applyRole(){
     badge.className='role-badge '+(currentRole||'');
     badge.textContent = currentRole==='admin'?'ADMIN':(currentRole==='lecture'?'LECTURE SEULE':'MEMBRE');
   }
-  var dirBtn=document.querySelector('.tabbar button[data-view="view-direction"]');
-  if(dirBtn)dirBtn.style.display=(currentRole==='admin')?'':'none';
+  document.querySelectorAll('.tabbar button[data-admin="1"]').forEach(function(b){
+    b.style.display=(currentRole==='admin')?'':'none';
+  });
 }
 /* garde-fous selon le rôle (filet de sécurité en plus du CSS) */
 /* tout le monde (admin/membre/lecture) peut écrire la base générale : fiche membre, carte */
@@ -1924,6 +2071,7 @@ function switchTab(btn){
   if(id==='view-map'){mapOpMode=null;initMap();}
   if(id==='view-home'){renderDashboard();}
   if(id==='view-direction'){renderDirDocs();}
+  if(id==='view-eval'){enterEval();}
   if(id==='view-comms'){enterComms();}
 }
 function showView(id){
@@ -2407,6 +2555,223 @@ function kitDragEnd(){
   if(d.from<to)to--; /* compense le retrait */
   arr.splice(to,0,moved);
   saveKitModel(model);renderKit();
+}
+
+/* ============ ÉVALUATION BULL (pages 25-26-27) — ADMIN ============ */
+var EVAL_PREFIX='__eval__';var currentEvalId=null;var evalDirty=false;
+/* critères fixes des tableaux (reproduisent la trame du Brown Book) */
+var EVAL_P1=[
+  {k:'appel',et:'Appel Initial',cr:'Compréhension du cadre et des attentes.'},
+  {k:'travail',et:'Travail Perso (2 sem.)',cr:'Qualité des recherches (DEVGRU / ST6).'},
+  {k:'debrief',et:'Débriefing',cr:'Capacité à corriger les erreurs / Rigueur.'},
+  {k:'candidature',et:'Candidature',cr:'Qualité de la lettre et pertinence des 3 spés.'}
+];
+var EVAL_P2=[
+  {k:'formation',et:'Formation Spé',cr:'Maîtrise des outils spécifiques à la spé.'},
+  {k:'drills',et:'Drills de base',cr:'Fluidité et répétition sans erreur.'},
+  {k:'integration',et:'Intégration',cr:'Comportement au sein du groupe.'}
+];
+var EVAL_P3=[
+  {k:'equip',et:'Équipement Spé',cr:'Liste de spécialisation complétée.'},
+  {k:'aor2',et:'Progression AOR2',cr:'Tenue conforme + Drills avancés (8 mois).'},
+  {k:'aor1',et:'Progression AOR1',cr:'Tenue conforme + Capacité OP (8 mois).'}
+];
+function evalsList(){
+  return Object.keys(db).filter(function(k){return k.indexOf(EVAL_PREFIX)===0;})
+    .map(function(k){var o=db[k];o._id=k;return o;})
+    .sort(function(a,b){return (b.created||0)-(a.created||0);});
+}
+function blankEval(){
+  var e={type:'eval',created:Date.now(),candidat:'',referent:'',date_entree:'',
+    p1:{},p1_perf:'',p1_spe:'',p1_green:false,
+    p2:{},p2_etat:'',p2_conf:false,
+    p3:{},
+    f_temps:'',f_esprit:'',f_phys:'',f_unan:'',f_comment:'',f_dec:'',f_motifs:'',f_sign:'',f_cloture:''};
+  EVAL_P1.forEach(function(r){e.p1[r.k]={ok:false,date:''};});
+  EVAL_P2.forEach(function(r){e.p2[r.k]={ok:false,date:''};});
+  EVAL_P3.forEach(function(r){e.p3[r.k]={ok:false,date:''};});
+  return e;
+}
+function refreshEvalSelect(){
+  var sel=document.getElementById('eval-select');if(!sel)return;
+  var list=evalsList();
+  sel.innerHTML='<option value="">— Choisir une fiche —</option>'+list.map(function(e){
+    return '<option value="'+e._id+'"'+(e._id===currentEvalId?' selected':'')+'>'+
+      esc(e.candidat||'(sans nom)')+' · '+new Date(e.created).toLocaleDateString('fr-FR')+'</option>';
+  }).join('');
+}
+function evalTblHTML(rows,phaseKey,data){
+  var h='<tr><th>Étape</th><th>Critères d\'évaluation</th><th>Valid.</th><th>Date</th></tr>';
+  rows.forEach(function(r){
+    var st=(data&&data[r.k])||{ok:false,date:''};
+    h+='<tr>'+
+      '<td class="et">'+r.et+'</td>'+
+      '<td>'+r.cr+'</td>'+
+      '<td class="c"><input type="checkbox" '+(st.ok?'checked':'')+' onchange="setEvalCell(\''+phaseKey+'\',\''+r.k+'\',\'ok\',this.checked)"></td>'+
+      '<td><input type="date" value="'+(st.date||'')+'" onchange="setEvalCell(\''+phaseKey+'\',\''+r.k+'\',\'date\',this.value)"></td>'+
+    '</tr>';
+  });
+  return h;
+}
+function newEval(){
+  if(!canAdmin())return;
+  currentEvalId=EVAL_PREFIX+uid();
+  db[currentEvalId]=blankEval();
+  fillEvalForm(db[currentEvalId]);refreshEvalSelect();evalDirty=false;
+  document.getElementById('eval-status').textContent='// nouvelle fiche';
+}
+function loadEval(id){
+  if(!id){return;}
+  currentEvalId=id;fillEvalForm(db[id]||blankEval());evalDirty=false;
+  document.getElementById('eval-status').textContent='';
+}
+function fillEvalForm(e){
+  document.getElementById('ev_candidat').value=e.candidat||'';
+  document.getElementById('ev_referent').value=e.referent||'';
+  document.getElementById('ev_date_entree').value=e.date_entree||'';
+  document.getElementById('ev_p1_tbl').innerHTML=evalTblHTML(EVAL_P1,'p1',e.p1);
+  document.getElementById('ev_p2_tbl').innerHTML=evalTblHTML(EVAL_P2,'p2',e.p2);
+  document.getElementById('ev_p3_tbl').innerHTML=evalTblHTML(EVAL_P3,'p3',e.p3);
+  document.getElementById('ev_p1_perf').value=e.p1_perf||'';
+  document.getElementById('ev_p1_spe').value=e.p1_spe||'';
+  document.getElementById('ev_p1_green').checked=!!e.p1_green;
+  document.getElementById('ev_p2_etat').value=e.p2_etat||'';
+  document.getElementById('ev_p2_conf').checked=!!e.p2_conf;
+  document.getElementById('ev_f_temps').value=e.f_temps||'';
+  document.getElementById('ev_f_esprit').value=e.f_esprit||'';
+  document.getElementById('ev_f_comment').value=e.f_comment||'';
+  document.getElementById('ev_f_motifs').value=e.f_motifs||'';
+  document.getElementById('ev_f_sign').value=e.f_sign||'';
+  document.getElementById('ev_f_cloture').value=e.f_cloture||'';
+  setRadio('ev_f_phys',e.f_phys);setRadio('ev_f_unan',e.f_unan);setRadio('ev_f_dec',e.f_dec);
+}
+function setRadio(name,val){
+  document.querySelectorAll('input[name="'+name+'"]').forEach(function(r){r.checked=(r.value===val);});
+}
+function getRadio(name){
+  var r=document.querySelector('input[name="'+name+'"]:checked');return r?r.value:'';
+}
+function setEvalCell(phase,key,field,val){
+  if(!currentEvalId)return;var e=db[currentEvalId];if(!e)return;
+  if(!e[phase])e[phase]={};if(!e[phase][key])e[phase][key]={ok:false,date:''};
+  e[phase][key][field]=val;markEvalDirty();
+}
+function markEvalDirty(){evalDirty=true;document.getElementById('eval-status').textContent='// non enregistré';}
+function readEvalForm(){
+  if(!currentEvalId)return null;var e=db[currentEvalId]||blankEval();
+  e.type='eval';
+  e.candidat=document.getElementById('ev_candidat').value;
+  e.referent=document.getElementById('ev_referent').value;
+  e.date_entree=document.getElementById('ev_date_entree').value;
+  e.p1_perf=document.getElementById('ev_p1_perf').value;
+  e.p1_spe=document.getElementById('ev_p1_spe').value;
+  e.p1_green=document.getElementById('ev_p1_green').checked;
+  e.p2_etat=document.getElementById('ev_p2_etat').value;
+  e.p2_conf=document.getElementById('ev_p2_conf').checked;
+  e.f_temps=document.getElementById('ev_f_temps').value;
+  e.f_esprit=document.getElementById('ev_f_esprit').value;
+  e.f_comment=document.getElementById('ev_f_comment').value;
+  e.f_motifs=document.getElementById('ev_f_motifs').value;
+  e.f_sign=document.getElementById('ev_f_sign').value;
+  e.f_cloture=document.getElementById('ev_f_cloture').value;
+  e.f_phys=getRadio('ev_f_phys');e.f_unan=getRadio('ev_f_unan');e.f_dec=getRadio('ev_f_dec');
+  db[currentEvalId]=e;return e;
+}
+function saveEval(){
+  if(!canAdmin())return;
+  if(!currentEvalId){newEval();}
+  readEvalForm();cacheLocal();
+  var st=document.getElementById('eval-status');st.textContent='// transmission...';
+  if(sb)cloudSave(currentEvalId).then(function(ok){st.textContent=ok?'// ENREGISTRÉ (cloud) ✓':'// ENREGISTRÉ (local) ✓';});
+  else st.textContent='// ENREGISTRÉ (local) ✓';
+  refreshEvalSelect();evalDirty=false;
+}
+function delEval(){
+  if(!canAdmin()||!currentEvalId)return;
+  if(!confirm('Supprimer cette fiche d\'évaluation ?'))return;
+  var id=currentEvalId;delete db[id];cacheLocal();if(sb)cloudDelete(id);
+  currentEvalId=null;refreshEvalSelect();
+  fillEvalForm(blankEval());
+  document.getElementById('eval-status').textContent='// supprimée';
+}
+function enterEval(){
+  if(!evalsList().length){newEval();}
+  else if(!currentEvalId){currentEvalId=evalsList()[0]._id;fillEvalForm(db[currentEvalId]);}
+  refreshEvalSelect();
+}
+/* PDF : fenêtre imprimable respectant la trame des pages 25-26-27 */
+function genEvalPdf(){
+  var e=readEvalForm();if(!e){alert('Crée ou sélectionne une fiche.');return;}
+  var ck=function(b){return b?'☑':'☐';};
+  var perf=function(v){return ['A','B','C'].map(function(x){return (v===x?'['+x+']':' '+x+' ');}).join(' ');};
+  function tbl(rows,data){
+    return '<table class="pt"><tr><th>Étape</th><th>Critères d\'évaluation</th><th>Valid.</th><th>Date & VISA</th></tr>'+
+      rows.map(function(r){var st=(data&&data[r.k])||{};
+        return '<tr><td><b>'+r.et+'</b></td><td>'+r.cr+'</td><td class="c">'+ck(st.ok)+'</td><td>'+(st.date||'')+'</td></tr>';
+      }).join('')+'</table>';
+  }
+  var html='<!DOCTYPE html><html><head><meta charset="utf-8"><title>Fiche Bull — '+esc(e.candidat||'')+'</title>'+
+    '<style>'+
+    '*{box-sizing:border-box;}body{font-family:Arial,Helvetica,sans-serif;color:#111;margin:0;padding:28px 34px;font-size:12px;}'+
+    'h1{font-size:18px;color:#1a3a6b;margin:0 0 2px;letter-spacing:1px;}'+
+    '.sub{color:#1a3a6b;font-weight:bold;font-size:12px;margin-bottom:14px;}'+
+    '.hd{display:flex;justify-content:space-between;border-bottom:2px solid #1a3a6b;padding-bottom:8px;margin-bottom:14px;}'+
+    '.id-row{margin:3px 0;}'+
+    '.phase{margin:16px 0 8px;font-weight:bold;font-size:13px;padding:5px 8px;border-radius:3px;color:#fff;}'+
+    '.p1{background:#2e9e54;}.p2{background:#d9a400;}.p3{background:#c0392b;}.pf{background:#1a3a6b;}'+
+    '.obj{font-style:italic;color:#444;margin:0 0 8px;}'+
+    'table.pt{width:100%;border-collapse:collapse;margin:6px 0 4px;}'+
+    'table.pt th,table.pt td{border:1px solid #999;padding:5px 7px;text-align:left;font-size:11px;}'+
+    'table.pt th{background:#eee;}table.pt td.c{text-align:center;font-size:14px;}'+
+    '.sel{margin:8px 0;font-weight:bold;color:#c0392b;}'+
+    '.line{margin:5px 0;}.k{display:inline-block;min-width:200px;color:#333;}'+
+    '.foot{margin-top:24px;border-top:1px solid #ccc;padding-top:10px;font-size:11px;}'+
+    '@media print{body{padding:10mm;}.phase{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}'+
+    '</style></head><body>'+
+    '<div class="hd"><div><h1>THE BROWN BOOK</h1><div class="sub">Fiche d\'évaluation — Protocole « BULL »</div></div>'+
+      '<div style="text-align:right;font-size:10px;color:#666">BROWN SQUADRON<br>C1 - Interne</div></div>'+
+    '<div class="id-row"><b>Identité du Candidat :</b> '+esc(e.candidat||'__________')+'</div>'+
+    '<div class="id-row"><b>Référent Évaluateur :</b> '+esc(e.referent||'__________')+'</div>'+
+    '<div class="id-row"><b>Date d\'entrée en sélection :</b> '+esc(e.date_entree||'__/__/20__')+'</div>'+
+
+    '<div class="phase p1">● PHASE 1 : PROSPECT ("Prospé")</div>'+
+    '<div class="obj">Objectif : Curiosité, recherche et motivation initiale.</div>'+
+    tbl(EVAL_P1,e.p1)+
+    '<div class="sel">▶ Sélection Intermédiaire</div>'+
+    '<div class="line"><span class="k">Épreuve : Marche 10 km — Performance :</span> '+perf(e.p1_perf)+'</div>'+
+    '<div class="line"><span class="k">Spécialité attribuée :</span> '+esc(e.p1_spe||'__________')+'</div>'+
+    '<div class="line">'+ck(e.p1_green)+' Accès Groupe Green : Validé</div>'+
+
+    '<div class="phase p2">● PHASE 2 : RECRUE</div>'+
+    '<div class="obj">Objectif : Technique et cohésion (Délai : 6 mois).</div>'+
+    tbl(EVAL_P2,e.p2)+
+    '<div class="sel">▶ Sélection Confirmation</div>'+
+    '<div class="line"><span class="k">Épreuve : Marche 15 km — État physique :</span> '+esc(e.p2_etat||'__________')+'</div>'+
+    '<div class="line">'+ck(e.p2_conf)+' Passage au statut Confirmé : Validé</div>'+
+
+    '<div class="phase p3">● PHASE 3 : CONFIRMÉ</div>'+
+    '<div class="obj">Objectif : Résilience et investissement matériel.</div>'+
+    tbl(EVAL_P3,e.p3)+
+
+    '<div class="phase pf">🏆 ADMISSION FINALE : STATUT "BULL"</div>'+
+    '<div class="line"><b>Validation Physique (20 km) :</b> Temps : '+esc(e.f_temps||'____')+
+      ' | État d\'esprit : '+esc(e.f_esprit||'____')+' | Résultat : '+
+      (e.f_phys==='OK'?'☑ OK':'☐ OK')+' / '+(e.f_phys==='KO'?'☑ KO':'☐ KO')+'</div>'+
+    '<div class="line"><b>Validation Sociale (Vote) :</b> Unanimité : '+
+      (e.f_unan==='Oui'?'☑ Oui':'☐ Oui')+' / '+(e.f_unan==='Non'?'☑ Non':'☐ Non')+
+      ' | Commentaire : '+esc(e.f_comment||'__________')+'</div>'+
+    '<div class="line"><b>Conclusion :</b> '+
+      (e.f_dec==='ADMIS'?'☑ ADMIS (Remise du Patch)':'☐ ADMIS (Remise du Patch)')+'  '+
+      (e.f_dec==='AJOURNE'?'☑ AJOURNÉ':'☐ AJOURNÉ')+'</div>'+
+    (e.f_motifs?'<div class="line"><b>Motifs :</b> '+esc(e.f_motifs)+'</div>':'')+
+    '<div class="foot"><b>Signature de l\'Évaluateur :</b> '+esc(e.f_sign||'__________')+
+      ' &nbsp;&nbsp; <b>Date de clôture :</b> '+esc(e.f_cloture||'__/__/20__')+'<br><br>'+
+      'VISA Leader Brown Squadron BS-01 &nbsp;&nbsp;&nbsp;&nbsp; Mention « Lu et approuvé » + Nom + VISA recrue</div>'+
+    '<script>window.onload=function(){setTimeout(function(){window.print();},300);};<\/script>'+
+    '</body></html>';
+  var w=window.open('','_blank');
+  if(!w){alert('Autorise les pop-ups pour générer le PDF.');return;}
+  w.document.open();w.document.write(html);w.document.close();
 }
 
 /* photos répliques */
@@ -4174,14 +4539,26 @@ function openGeoloc(){
   var isIOS=/iphone|ipad|ipod/i.test(ua);
   var pkg='com.aresalpha.ares';
   if(isAndroid){
-    /* intent LAUNCHER ciblant directement le package, avec fallback Play Store
-       intégré (S.browser_fallback_url) : si l'app est là elle s'ouvre, sinon
-       Android redirige tout seul. On ne déclenche PAS de redirection manuelle
-       (c'était elle qui ouvrait le store même app installée). */
-    var fallback=encodeURIComponent('https://play.google.com/store/apps/details?id='+pkg);
-    window.location.href='intent://#Intent;package='+pkg+
-      ';action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;'+
-      'S.browser_fallback_url='+fallback+';end';
+    /* On lance l'activité LAUNCHER du package (Ares n'expose pas de deep-link).
+       PAS de S.browser_fallback_url (Chrome 12+ l'ouvre trop vite même app installée).
+       On détecte si l'app a pris le focus (page cachée) ; sinon -> store. */
+    var left=false;
+    function onHide(){left=true;}
+    document.addEventListener('visibilitychange',function h(){if(document.hidden)onHide();document.removeEventListener('visibilitychange',h);});
+    window.addEventListener('blur',function b(){onHide();window.removeEventListener('blur',b);});
+    window.addEventListener('pagehide',onHide,{once:true});
+    /* intent LAUNCHER pur */
+    var url='intent://#Intent;package='+pkg+';action=android.intent.action.MAIN;'+
+      'category=android.intent.category.LAUNCHER;end';
+    try{window.location.href=url;}catch(e){}
+    /* store seulement si on n'a pas quitté l'app au bout de 1,5 s */
+    setTimeout(function(){
+      if(!left&&!document.hidden){
+        if(confirm('Ares Alpha ne semble pas installé. Ouvrir le Play Store ?')){
+          window.location.href='https://play.google.com/store/apps/details?id='+pkg;
+        }
+      }
+    },1500);
   }else if(isIOS){
     window.location.href='https://apps.apple.com/app/ares-alpha/id1467152818';
   }else{
