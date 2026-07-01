@@ -1368,6 +1368,9 @@
           <button class="ghost" onclick="addKitLine('annexe')">+ Ajouter</button>
         </div>
       </div>
+      <div class="kit-admin-only" style="margin-top:14px;text-align:right">
+        <button class="ghost" onclick="reseedKitModel()" title="Réécrit la kit-list officielle (avec contenances) pour tous les comptes">&#8635; R&eacute;initialiser le mod&egrave;le officiel</button>
+      </div>
     </section>
 
     <section>
@@ -1919,6 +1922,25 @@ var KIT_ANNEXE_DEF=[
 ];
 /* clé cloud du modèle global de kit */
 var KIT_DOC_KEY='__kitlist__';
+/* table de référence des contenances par défaut (nom d'item -> sous-items) */
+function defaultSubMap(){
+  var m={};
+  [KIT_AOR2_DEF,KIT_AOR1_DEF,KIT_ANNEXE_DEF].forEach(function(arr){
+    arr.forEach(function(it){if(it.sub&&it.sub.length)m[it.name]=it.sub;});
+  });
+  return m;
+}
+/* réinjecte les sous-items par défaut sur un item cloud qui n'en a pas encore.
+   On NE touche pas aux items déjà munis de sub (l'admin a pu les éditer). */
+function hydrateSub(arr){
+  var map=defaultSubMap();
+  return (arr||[]).map(function(it){
+    if((!it.sub||!it.sub.length)&&map[it.name]){
+      return {name:it.name,sub:map[it.name].map(function(s){return {name:s.name,qty:s.qty||1};})};
+    }
+    return it;
+  });
+}
 /* modèle courant (chargé du cloud sinon défaut) */
 function defaultKitModel(){
   return {aor2:KIT_AOR2_DEF.map(cloneItem),aor1:KIT_AOR1_DEF.map(cloneItem),annexe:KIT_ANNEXE_DEF.map(cloneItem)};
@@ -1926,7 +1948,9 @@ function defaultKitModel(){
 function cloneItem(k){return {name:k.name,sub:k.sub?k.sub.map(function(s){return {name:s.name,qty:s.qty||1};}):undefined};}
 function kitModel(){
   var d=db[KIT_DOC_KEY];
-  if(d&&d.aor2&&d.aor1&&d.annexe)return {aor2:d.aor2.slice(),aor1:d.aor1.slice(),annexe:d.annexe.slice()};
+  if(d&&d.aor2&&d.aor1&&d.annexe){
+    return {aor2:hydrateSub(d.aor2.slice()),aor1:hydrateSub(d.aor1.slice()),annexe:hydrateSub(d.annexe.slice())};
+  }
   return defaultKitModel();
 }
 /* liste à plat (ordre PDF) pour calculs de progression et stockage par membre */
@@ -2512,6 +2536,14 @@ function delSubLine(sec,i,j){
 function saveKitModel(model){
   db[KIT_DOC_KEY]={type:'kitlist',aor2:model.aor2,aor1:model.aor1,annexe:model.annexe};
   cacheLocal();if(sb)cloudSave(KIT_DOC_KEY);
+}
+/* réinitialise la kit-list officielle (avec contenances) pour tous les comptes */
+function reseedKitModel(){
+  if(!canAdmin()){alert('Réservé à l\'administrateur.');return;}
+  if(!confirm('Réinitialiser la kit-list officielle ?\n\nLes lignes et contenances par défaut (chargeurs, grenades, etc.) seront restaurées pour TOUS les comptes. Les cases cochées et quantités de chaque membre ne sont pas touchées.'))return;
+  saveKitModel(defaultKitModel());
+  renderKit();
+  alert('Kit-list officielle réinitialisée ✓ (synchronisée sur tous les comptes)');
 }
 
 /* ===== DRAG & DROP réordonnancement (admin) — maintien + glisser ===== */
